@@ -6,15 +6,18 @@ import notificationsIcon from '@/assets/icons/notifications.svg?raw'
 
 const router = useRouter()
 
+interface NotificationItem {
+  id: number
+  text: string
+  time: string
+}
+
 const searchQuery = ref('')
 const showNotifications = ref(false)
 const showProfileMenu = ref(false)
 
-const notifications = [
-  { id: 1, text: '새로운 참가 신청이 있습니다.', time: '5분 전' },
-  { id: 2, text: '모집이 마감되었습니다.', time: '1시간 전' },
-  { id: 3, text: '댓글이 달렸습니다.', time: '어제' },
-]
+// TODO: no backend endpoint for notifications yet.
+const notifications = ref<NotificationItem[]>([])
 
 function toggleNotifications() {
   showNotifications.value = !showNotifications.value
@@ -61,16 +64,19 @@ function navigate(to: string) {
           @click="toggleNotifications"
         >
           <span class="icon" v-html="notificationsIcon"></span>
-          <span class="badge">3</span>
+          <span v-if="notifications.length > 0" class="badge">
+            {{ notifications.length }}
+          </span>
         </button>
         <div v-if="showNotifications" class="dropdown notif-dropdown">
           <div class="dropdown-header">알림</div>
-          <ul>
+          <ul v-if="notifications.length > 0">
             <li v-for="n in notifications" :key="n.id">
               <div class="notif-text">{{ n.text }}</div>
               <div class="notif-time">{{ n.time }}</div>
             </li>
           </ul>
+          <div v-else class="empty-notif">새 알림이 없습니다.</div>
         </div>
       </div>
 
@@ -81,7 +87,7 @@ function navigate(to: string) {
           @click="toggleProfileMenu"
         >
           <img
-            src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Dicey"
+            src="https://api.dicebear.com/7.x/pixel-art/svg"
             alt="profile"
           />
         </button>
@@ -287,6 +293,13 @@ function navigate(to: string) {
   font-size: 0.75rem;
   opacity: 0.65;
   margin-top: 2px;
+}
+
+.empty-notif {
+  padding: 1.25rem 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.65;
 }
 
 .divider {

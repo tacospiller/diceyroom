@@ -32,7 +32,7 @@ export async function listPosts(
   filter: Partial<PostDocument> = {},
 ): Promise<PostListEntry[]> {
   const res = await apiClient.get<PostListEntry[]>('/post/list', {
-    data: { filter },
+    params: filter,
   })
   return res.data
 }

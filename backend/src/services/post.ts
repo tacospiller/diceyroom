@@ -15,6 +15,7 @@ export interface PostDocument extends DBDocument {
 }
 
 interface PostListEntry {
+    key: string;
     userid: string;
     rule: string;
     sessionDate: Date;
@@ -61,7 +62,7 @@ export async function getPost(key: string): Promise<PostDocument> {
 }
 
 export async function listPost(filter: Partial<PostDocument>): Promise<PostListEntry[]> {
-    var docs = await db.query<PostDocument>(TABLE, filter, ["userid", "rule", "recruitEndDate", "sessionDate"]);
+    var docs = await db.query<PostDocument>(TABLE, filter, ["key", "userid", "rule", "recruitEndDate", "sessionDate"]);
     // TODO: pagination 
     return docs as PostListEntry[];
 }

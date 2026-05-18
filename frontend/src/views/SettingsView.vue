@@ -4,16 +4,18 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
+// TODO: backend has no profile / notification preferences / password change /
+// account deletion / logout endpoints yet. Form values stay empty and the
+// "save" actions are no-ops until those endpoints land.
 const profile = ref({
-  displayName: 'Min',
-  bio: 'Call of Cthulhu 7e 키퍼. 입문자에게 친절한 진행을 지향합니다.',
-  avatar: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=Min',
+  displayName: '',
+  bio: '',
 })
 
 const notifications = ref({
-  applyReceived: true,
-  applyAccepted: true,
-  comments: true,
+  applyReceived: false,
+  applyAccepted: false,
+  comments: false,
   marketing: false,
 })
 
@@ -23,18 +25,11 @@ const password = ref({
   confirm: '',
 })
 
-const saving = ref(false)
-const savedMsg = ref('')
-
-async function saveProfile() {
-  saving.value = true
-  await new Promise((r) => setTimeout(r, 300))
-  saving.value = false
-  savedMsg.value = '프로필이 저장되었습니다.'
-  setTimeout(() => (savedMsg.value = ''), 2000)
+function saveProfile() {
+  alert('프로필 저장 기능은 준비 중입니다.')
 }
 
-async function changePassword() {
+function changePassword() {
   if (password.value.next !== password.value.confirm) {
     alert('새 비밀번호가 일치하지 않습니다.')
     return
@@ -43,16 +38,12 @@ async function changePassword() {
     alert('비밀번호는 8자 이상이어야 합니다.')
     return
   }
-  saving.value = true
-  await new Promise((r) => setTimeout(r, 300))
-  saving.value = false
-  password.value = { current: '', next: '', confirm: '' }
-  savedMsg.value = '비밀번호가 변경되었습니다.'
-  setTimeout(() => (savedMsg.value = ''), 2000)
+  alert('비밀번호 변경 기능은 준비 중입니다.')
 }
 
 function logout() {
   if (!confirm('로그아웃 하시겠습니까?')) return
+  // TODO: call logout endpoint once available; for now just navigate away.
   router.push('/login')
 }
 
@@ -63,8 +54,7 @@ function deleteAccount() {
     )
   )
     return
-  alert('계정 삭제 요청이 접수되었습니다.')
-  router.push('/login')
+  alert('계정 삭제 기능은 준비 중입니다.')
 }
 </script>
 
@@ -75,20 +65,17 @@ function deleteAccount() {
       <p class="sub">프로필과 알림, 계정 정보를 관리합니다.</p>
     </header>
 
-    <transition name="fade">
-      <div v-if="savedMsg" class="saved-toast">{{ savedMsg }}</div>
-    </transition>
-
     <section class="card">
       <h2>프로필</h2>
-      <div class="avatar-row">
-        <img :src="profile.avatar" alt="avatar" />
-        <button class="secondary-btn" type="button">이미지 변경</button>
-      </div>
 
       <div class="field">
         <label for="display">표시 이름</label>
-        <input id="display" v-model="profile.displayName" type="text" />
+        <input
+          id="display"
+          v-model="profile.displayName"
+          type="text"
+          placeholder="표시할 이름을 입력하세요"
+        />
       </div>
 
       <div class="field">
@@ -97,7 +84,7 @@ function deleteAccount() {
       </div>
 
       <div class="actions">
-        <button class="primary-btn" :disabled="saving" @click="saveProfile">
+        <button class="primary-btn" @click="saveProfile">
           저장
         </button>
       </div>
@@ -164,7 +151,7 @@ function deleteAccount() {
         <input id="conf" v-model="password.confirm" type="password" />
       </div>
       <div class="actions">
-        <button class="primary-btn" :disabled="saving" @click="changePassword">
+        <button class="primary-btn" @click="changePassword">
           비밀번호 변경
         </button>
       </div>
