@@ -165,7 +165,7 @@ h1 {
 
 .field input:focus {
   outline: none;
-  border-color: #ea580c;
+  border-color: var(--color-red);
 }
 
 .remember {
@@ -177,25 +177,17 @@ h1 {
 }
 
 .error-msg {
-  color: #dc2626;
+  color: var(--color-red);
   font-size: 0.85rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: var(--color-red-soft);
+  border: 1px solid rgba(255, 56, 49, 0.35);
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .error-msg {
-    background: #3f1414;
-    border-color: #7f1d1d;
-    color: #fca5a5;
-  }
-}
-
 .primary-btn {
-  background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
-  color: white;
+  background: var(--color-red);
+  color: var(--color-text);
   border: none;
   padding: 0.65rem 1rem;
   border-radius: 6px;
@@ -206,11 +198,12 @@ h1 {
 }
 
 .primary-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #b91c1c 0%, #c2410c 100%);
+  background: var(--color-red-hover);
 }
 
 .primary-btn:disabled {
-  background: #d1d5db;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -223,7 +216,7 @@ h1 {
 }
 
 .auth-foot a {
-  color: #ea580c;
+  color: var(--color-red);
   font-weight: 600;
   margin-left: 0.4rem;
 }

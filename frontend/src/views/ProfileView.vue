@@ -62,8 +62,8 @@ import { RouterLink } from 'vue-router'
 }
 
 .quick-link:hover {
-  background: rgba(234, 88, 12, 0.06);
-  border-color: #ea580c;
+  background: var(--color-red-soft);
+  border-color: var(--color-red);
 }
 
 .ql-icon {

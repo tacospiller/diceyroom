@@ -103,7 +103,8 @@ onMounted(async () => {
 .hero {
   text-align: center;
   padding: 2rem 1rem 2.5rem;
-  background: linear-gradient(135deg, #fef2f2 0%, #fff7ed 50%, #fefce8 100%);
+  background: linear-gradient(135deg, #2a1212 0%, #1f0e0e 100%);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   margin-bottom: 1.5rem;
 }
@@ -111,25 +112,14 @@ onMounted(async () => {
 .hero h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #b91c1c;
+  color: var(--color-red);
   margin-bottom: 0.4rem;
 }
 
 .hero p {
-  color: #c2410c;
+  color: var(--color-text);
+  opacity: 0.85;
   font-size: 0.95rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  .hero {
-    background: linear-gradient(135deg, #3f1414 0%, #3a1f0a 50%, #3a2f0a 100%);
-  }
-  .hero h1 {
-    color: #fca5a5;
-  }
-  .hero p {
-    color: #fdba74;
-  }
 }
 
 .board-controls {
@@ -165,18 +155,10 @@ onMounted(async () => {
 }
 
 .state-msg.error {
-  color: #dc2626;
-  border-color: #fecaca;
-  background: #fef2f2;
+  color: var(--color-red);
+  border-color: rgba(255, 56, 49, 0.35);
+  background: var(--color-red-soft);
   opacity: 1;
-}
-
-@media (prefers-color-scheme: dark) {
-  .state-msg.error {
-    background: #3f1414;
-    border-color: #7f1d1d;
-    color: #fca5a5;
-  }
 }
 
 .table-wrap {
@@ -193,7 +175,7 @@ onMounted(async () => {
 }
 
 .post-table thead {
-  background: rgba(234, 88, 12, 0.06);
+  background: var(--color-surface);
 }
 
 .post-table th {
@@ -214,7 +196,7 @@ onMounted(async () => {
 }
 
 .post-table tbody tr:hover {
-  background: rgba(234, 88, 12, 0.05);
+  background: var(--color-red-soft);
 }
 
 .col-rule {
@@ -236,7 +218,7 @@ onMounted(async () => {
 }
 
 .title-cell a:hover {
-  color: #dc2626;
+  color: var(--color-red);
   text-decoration: underline;
 }
 

@@ -198,7 +198,7 @@ function submitComment() {
 }
 
 .back-btn:hover {
-  color: #ea580c;
+  color: var(--color-red);
 }
 
 .loading {
@@ -210,19 +210,11 @@ function submitComment() {
 .error-box {
   text-align: center;
   padding: 2rem 1rem;
-  border: 1px solid #fecaca;
+  border: 1px solid rgba(255, 56, 49, 0.35);
   border-radius: 10px;
-  background: #fef2f2;
-  color: #b91c1c;
+  background: var(--color-red-soft);
+  color: var(--color-red);
   font-size: 0.9rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  .error-box {
-    background: #3f1414;
-    border-color: #7f1d1d;
-    color: #fca5a5;
-  }
 }
 
 .post-card {
@@ -257,7 +249,7 @@ function submitComment() {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #ddd;
+  background: var(--color-surface);
 }
 
 .dot {
@@ -272,7 +264,7 @@ function submitComment() {
   padding: 1rem;
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  background: rgba(234, 88, 12, 0.04);
+  background: var(--color-surface);
 }
 
 .info-grid > div {
@@ -293,7 +285,7 @@ function submitComment() {
 }
 
 .info-grid dd.full {
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .description h2,
@@ -316,8 +308,8 @@ function submitComment() {
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
-  color: white;
+  background: var(--color-red);
+  color: var(--color-text);
   border: none;
   padding: 0.6rem 1.4rem;
   border-radius: 6px;
@@ -327,11 +319,12 @@ function submitComment() {
 }
 
 .primary-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #b91c1c 0%, #c2410c 100%);
+  background: var(--color-red-hover);
 }
 
 .primary-btn:disabled {
-  background: #d1d5db;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -350,7 +343,8 @@ function submitComment() {
 }
 
 .secondary-btn:hover {
-  background: rgba(234, 88, 12, 0.08);
+  background: var(--color-red-soft);
+  border-color: var(--color-red);
 }
 
 .mode-pill {
@@ -361,21 +355,12 @@ function submitComment() {
   font-weight: 600;
 }
 
-.mode-pill.text {
-  background: #fef9c3;
-  color: #a16207;
-}
-.mode-pill.voice {
-  background: #ffedd5;
-  color: #c2410c;
-}
-.mode-pill.offline {
-  background: #fee2e2;
-  color: #b91c1c;
-}
+.mode-pill.text,
+.mode-pill.voice,
+.mode-pill.offline,
 .mode-pill.other {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--color-red-soft);
+  color: var(--color-red);
 }
 
 .comments {
@@ -433,7 +418,7 @@ function submitComment() {
 
 .comment-form textarea:focus {
   outline: none;
-  border-color: #ea580c;
+  border-color: var(--color-red);
 }
 
 .comment-form button {

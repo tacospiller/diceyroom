@@ -168,8 +168,8 @@ function remove(_id: string) {
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
-  color: white;
+  background: var(--color-red);
+  color: var(--color-text);
   border: none;
   padding: 0.55rem 1.1rem;
   border-radius: 6px;
@@ -178,7 +178,7 @@ function remove(_id: string) {
 }
 
 .primary-btn:hover {
-  background: linear-gradient(135deg, #b91c1c 0%, #c2410c 100%);
+  background: var(--color-red-hover);
 }
 
 .tabs {
@@ -202,12 +202,12 @@ function remove(_id: string) {
 }
 
 .tabs button:hover {
-  color: #ea580c;
+  color: var(--color-red);
 }
 
 .tabs button.active {
-  border-bottom-color: #ea580c;
-  color: #ea580c;
+  border-bottom-color: var(--color-red);
+  color: var(--color-red);
   font-weight: 600;
 }
 
@@ -220,18 +220,10 @@ function remove(_id: string) {
 }
 
 .empty.error {
-  color: #dc2626;
-  border-color: #fecaca;
-  background: #fef2f2;
+  color: var(--color-red);
+  border-color: rgba(255, 56, 49, 0.35);
+  background: var(--color-red-soft);
   opacity: 1;
-}
-
-@media (prefers-color-scheme: dark) {
-  .empty.error {
-    background: #3f1414;
-    border-color: #7f1d1d;
-    color: #fca5a5;
-  }
 }
 
 .post-list {
@@ -257,7 +249,7 @@ function remove(_id: string) {
 }
 
 .post-list li:hover {
-  border-color: #ea580c;
+  border-color: var(--color-red);
 }
 
 .row1 {
@@ -295,12 +287,11 @@ function remove(_id: string) {
 }
 
 .title:hover {
-  color: #dc2626;
+  color: var(--color-red);
   text-decoration: underline;
 }
 
-.status-pill,
-.mode-pill {
+.status-pill {
   display: inline-block;
   padding: 2px 10px;
   border-radius: 999px;
@@ -310,35 +301,18 @@ function remove(_id: string) {
 }
 
 .status-pill.recruiting {
-  background: #dcfce7;
-  color: #166534;
+  background: rgba(134, 239, 172, 0.12);
+  color: #86efac;
 }
 
 .status-pill.closed {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(252, 211, 77, 0.12);
+  color: #fcd34d;
 }
 
 .status-pill.done {
-  background: #f3f4f6;
-  color: #6b7280;
-}
-
-.mode-pill.text {
-  background: #fef9c3;
-  color: #a16207;
-}
-.mode-pill.voice {
-  background: #ffedd5;
-  color: #c2410c;
-}
-.mode-pill.offline {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-.mode-pill.other {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: rgba(255, 253, 219, 0.08);
+  color: var(--color-text-muted);
 }
 
 .link-btn {
@@ -352,28 +326,13 @@ function remove(_id: string) {
 }
 
 .link-btn:hover {
-  background: rgba(234, 88, 12, 0.08);
-  border-color: #ea580c;
+  background: var(--color-red-soft);
+  border-color: var(--color-red);
 }
 
 .link-btn.danger:hover {
-  background: #fef2f2;
-  border-color: #dc2626;
-  color: #dc2626;
-}
-
-@media (prefers-color-scheme: dark) {
-  .link-btn.danger:hover {
-    background: #3f1414;
-    color: #fca5a5;
-  }
-  .status-pill.recruiting {
-    background: #14361f;
-    color: #86efac;
-  }
-  .status-pill.closed {
-    background: #3f2e0a;
-    color: #fcd34d;
-  }
+  background: var(--color-red-soft);
+  border-color: var(--color-red);
+  color: var(--color-red);
 }
 </style>

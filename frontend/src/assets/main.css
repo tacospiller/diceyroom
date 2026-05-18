@@ -1,15 +1,13 @@
 :root {
-  --color-background: #ffffff;
-  --color-text: #2c3e50;
-  --color-border: #e0e0e0;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #181818;
-    --color-text: #ebebeb;
-    --color-border: #2d2d2d;
-  }
+  --color-background: #181616;
+  --color-surface: #1f1d1d;
+  --color-text: #fffddb;
+  --color-text-muted: rgba(255, 253, 219, 0.65);
+  --color-border: rgba(255, 253, 219, 0.18);
+  --color-red: #ff3831;
+  --color-red-hover: #e61707;
+  --color-red-soft: rgba(255, 56, 49, 0.12);
+  color-scheme: dark;
 }
 
 *,

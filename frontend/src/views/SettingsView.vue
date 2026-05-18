@@ -199,33 +199,6 @@ function deleteAccount() {
   opacity: 0.75;
 }
 
-.saved-toast {
-  background: #dcfce7;
-  color: #166534;
-  border: 1px solid #86efac;
-  padding: 0.6rem 0.85rem;
-  border-radius: 8px;
-  font-size: 0.88rem;
-  margin-bottom: 1rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  .saved-toast {
-    background: #14361f;
-    color: #86efac;
-    border-color: #166534;
-  }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
 .card {
   border: 1px solid var(--color-border);
   border-radius: 12px;
@@ -251,7 +224,7 @@ function deleteAccount() {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: #ddd;
+  background: var(--color-surface);
 }
 
 .field {
@@ -280,7 +253,7 @@ function deleteAccount() {
 .field input:focus,
 .field textarea:focus {
   outline: none;
-  border-color: #ea580c;
+  border-color: var(--color-red);
 }
 
 .field textarea {
@@ -293,8 +266,8 @@ function deleteAccount() {
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
-  color: white;
+  background: var(--color-red);
+  color: var(--color-text);
   border: none;
   padding: 0.55rem 1.2rem;
   border-radius: 6px;
@@ -304,7 +277,7 @@ function deleteAccount() {
 }
 
 .primary-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #b91c1c 0%, #c2410c 100%);
+  background: var(--color-red-hover);
 }
 
 .primary-btn:disabled {
@@ -324,33 +297,23 @@ function deleteAccount() {
 }
 
 .secondary-btn:hover {
-  background: rgba(234, 88, 12, 0.08);
-  border-color: #ea580c;
+  background: var(--color-red-soft);
+  border-color: var(--color-red);
 }
 
 .danger-btn {
   padding: 0.5rem 1rem;
-  border: 1px solid #fecaca;
+  border: 1px solid rgba(255, 56, 49, 0.35);
   border-radius: 6px;
   font-weight: 600;
   font-size: 0.88rem;
   cursor: pointer;
-  color: #dc2626;
+  color: var(--color-red);
   background: var(--color-background);
 }
 
 .danger-btn:hover {
-  background: #fef2f2;
-}
-
-@media (prefers-color-scheme: dark) {
-  .danger-btn {
-    border-color: #7f1d1d;
-    color: #fca5a5;
-  }
-  .danger-btn:hover {
-    background: #3f1414;
-  }
+  background: var(--color-red-soft);
 }
 
 .toggle-list {
@@ -400,7 +363,8 @@ function deleteAccount() {
 .slider {
   position: absolute;
   inset: 0;
-  background: #d1d5db;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 999px;
   cursor: pointer;
   transition: background 0.2s;
@@ -409,31 +373,27 @@ function deleteAccount() {
 .slider::before {
   content: '';
   position: absolute;
-  height: 16px;
-  width: 16px;
+  height: 14px;
+  width: 14px;
   left: 3px;
   bottom: 3px;
-  background: white;
+  background: var(--color-text);
   border-radius: 50%;
   transition: transform 0.2s;
 }
 
 .switch input:checked + .slider {
-  background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
+  background: var(--color-red);
+  border-color: var(--color-red);
 }
 
 .switch input:checked + .slider::before {
   transform: translateX(18px);
+  background: var(--color-text);
 }
 
 .danger-zone {
-  border-color: #fecaca;
-}
-
-@media (prefers-color-scheme: dark) {
-  .danger-zone {
-    border-color: #7f1d1d;
-  }
+  border-color: rgba(255, 56, 49, 0.35);
 }
 
 .danger-row {

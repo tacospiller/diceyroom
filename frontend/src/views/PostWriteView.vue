@@ -281,7 +281,7 @@ function cancel() {
 }
 
 .req {
-  color: #dc2626;
+  color: var(--color-red);
 }
 
 .field input,
@@ -301,7 +301,7 @@ function cancel() {
 .field select:focus,
 .field textarea:focus {
   outline: none;
-  border-color: #ea580c;
+  border-color: var(--color-red);
 }
 
 .field textarea {
@@ -316,26 +316,18 @@ function cancel() {
 }
 
 .error {
-  color: #dc2626;
+  color: var(--color-red);
   font-size: 0.78rem;
 }
 
 .error-msg {
-  color: #dc2626;
+  color: var(--color-red);
   font-size: 0.85rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: var(--color-red-soft);
+  border: 1px solid rgba(255, 56, 49, 0.35);
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   margin: 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  .error-msg {
-    background: #3f1414;
-    border-color: #7f1d1d;
-    color: #fca5a5;
-  }
 }
 
 .actions {
@@ -346,8 +338,8 @@ function cancel() {
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
-  color: white;
+  background: var(--color-red);
+  color: var(--color-text);
   border: none;
   padding: 0.6rem 1.4rem;
   border-radius: 6px;
@@ -357,11 +349,12 @@ function cancel() {
 }
 
 .primary-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #b91c1c 0%, #c2410c 100%);
+  background: var(--color-red-hover);
 }
 
 .primary-btn:disabled {
-  background: #d1d5db;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -378,6 +371,7 @@ function cancel() {
 }
 
 .secondary-btn:hover {
-  background: rgba(234, 88, 12, 0.08);
+  background: var(--color-red-soft);
+  border-color: var(--color-red);
 }
 </style>

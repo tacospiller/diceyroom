@@ -159,7 +159,7 @@ function navigate(to: string) {
   cursor: pointer;
   display: flex;
   align-items: center;
-  color: #ea580c;
+  color: var(--color-red);
 }
 
 .icon {
@@ -184,8 +184,8 @@ function navigate(to: string) {
 .create-btn {
   display: inline-flex;
   align-items: center;
-  background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
-  color: white;
+  background: var(--color-red);
+  color: var(--color-text);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
@@ -197,7 +197,7 @@ function navigate(to: string) {
 }
 
 .create-btn:hover {
-  background: linear-gradient(135deg, #b91c1c 0%, #c2410c 100%);
+  background: var(--color-red-hover);
 }
 
 .action-wrap {
@@ -225,8 +225,8 @@ function navigate(to: string) {
   position: absolute;
   top: 0;
   right: 0;
-  background: #ef4444;
-  color: white;
+  background: var(--color-red);
+  color: var(--color-text);
   font-size: 0.65rem;
   padding: 1px 5px;
   border-radius: 999px;
@@ -248,7 +248,7 @@ function navigate(to: string) {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  background: #ddd;
+  background: var(--color-surface);
 }
 
 .dropdown {
@@ -259,7 +259,7 @@ function navigate(to: string) {
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   z-index: 200;
 }
 
@@ -282,7 +282,7 @@ function navigate(to: string) {
 }
 
 .dropdown li:hover {
-  background: rgba(234, 88, 12, 0.1);
+  background: var(--color-red-soft);
 }
 
 .notif-text {

@@ -39,6 +39,6 @@
 }
 
 .footer-nav a:hover {
-  color: #ea580c;
+  color: var(--color-red);
 }
 </style>
