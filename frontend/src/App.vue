@@ -1,36 +1,29 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
+import AppHeader from '@/components/AppHeader.vue'
+import AppFooter from '@/components/AppFooter.vue'
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
-      <h1>Diceyroom</h1>
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
+  <div class="app">
+    <AppHeader />
 
-  <RouterView />
+    <main class="site-main">
+      <RouterView />
+    </main>
+
+    <AppFooter />
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  padding: 1rem 2rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-nav {
+.app {
   display: flex;
-  gap: 1rem;
-  font-size: 0.9rem;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-  font-weight: 600;
+.site-main {
+  flex: 1;
 }
 </style>
