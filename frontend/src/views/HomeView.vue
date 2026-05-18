@@ -103,7 +103,7 @@ onMounted(async () => {
 .hero {
   text-align: center;
   padding: 2rem 1rem 2.5rem;
-  background: linear-gradient(135deg, #2a1212 0%, #1f0e0e 100%);
+
   border: 1px solid var(--color-border);
   border-radius: 12px;
   margin-bottom: 1.5rem;
@@ -112,7 +112,7 @@ onMounted(async () => {
 .hero h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--color-red);
+  color: var(--color-text);
   margin-bottom: 0.4rem;
 }
 
