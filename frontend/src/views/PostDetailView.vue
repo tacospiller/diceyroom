@@ -39,7 +39,7 @@ const title = computed(() => {
   const firstLine = post.value.description.split('\n')[0]?.trim()
   return firstLine && firstLine.length > 0 ? firstLine : `[${post.value.rule}] 구인글`
 })
-const mode = computed<Mode>(() => 'other')
+const mode = computed<Mode>(() => post.value ? post.value.mode : 'other')
 const authorAvatar = computed(() =>
   post.value
     ? `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(post.value.userid)}`
@@ -345,22 +345,6 @@ function submitComment() {
 .secondary-btn:hover {
   background: var(--color-red-soft);
   border-color: var(--color-red);
-}
-
-.mode-pill {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.mode-pill.text,
-.mode-pill.voice,
-.mode-pill.offline,
-.mode-pill.other {
-  background: var(--color-red-soft);
-  color: var(--color-red);
 }
 
 .comments {

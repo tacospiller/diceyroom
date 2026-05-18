@@ -1,10 +1,14 @@
 import { apiClient } from './client'
 
+export type PostMode = 'text' | 'voice' | 'offline' | 'other'
+
 export interface PostDocument {
   key: string
   userid: string
   rule: string
+  title: string
   description: string
+  mode: PostMode
   sessionDate: string
   recruitEndDate: string
   creationDate: string
@@ -12,8 +16,9 @@ export interface PostDocument {
 
 export interface PostListEntry {
   key: string
-  userid: string
   rule: string
+  title: string
+  mode: PostMode
   sessionDate: string
   recruitEndDate: string
 }

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import '../types/session';
 import { join, login, InvalidUsernameError, UsernameTakenError } from '../services/account';
+import { nanoid } from 'nanoid';
 
 const router = Router();
 
@@ -23,8 +24,9 @@ router.post('/login', async (req, res) => {
     res.sendStatus(401);
     return;
   }
-  req.session.user = { username: user.username, userid: user.userid };
-  res.sendStatus(200);
+  const sid = nanoid();
+  req.session.user = { username: user.username, userid: user.userid, sessionid:sid };
+  res.status(200).json({ username: user.username, userid: user.userid, sessionId: sid });
 });
 
 export default router;

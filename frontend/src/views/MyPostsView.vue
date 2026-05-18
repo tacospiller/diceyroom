@@ -2,6 +2,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { listPosts, type PostListEntry } from '@/api/posts'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
 
 type Status = 'recruiting' | 'closed' | 'done'
 
@@ -44,9 +47,7 @@ function titleFrom(_: PostListEntry): string {
 
 onMounted(async () => {
   try {
-    // TODO: backend has no /account/me endpoint, so we can't filter by current user yet.
-    // For now we list all posts; once /me is added, filter with { userid: me.userid }.
-    const list = await listPosts()
+    const list = await listPosts({ userid: userStore.session.userid })
     myPosts.value = list.map((p) => ({ ...p, status: deriveStatus(p) }))
   } catch (err: unknown) {
     const status = (err as { response?: { status?: number } })?.response?.status

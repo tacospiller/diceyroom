@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 // TODO: backend has no profile / notification preferences / password change /
 // account deletion / logout endpoints yet. Form values stay empty and the
@@ -43,7 +45,8 @@ function changePassword() {
 
 function logout() {
   if (!confirm('로그아웃 하시겠습니까?')) return
-  // TODO: call logout endpoint once available; for now just navigate away.
+  // TODO: call logout endpoint once available.
+  userStore.clear()
   router.push('/login')
 }
 

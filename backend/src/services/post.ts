@@ -8,7 +8,9 @@ const TABLE = config.tables.posts;
 export interface PostDocument extends DBDocument {
     userid: string;
     rule: string;
+    title: string;
     description: string;
+    mode: string;
     sessionDate: Date;
     recruitEndDate: Date;
     creationDate: Date;
@@ -62,7 +64,7 @@ export async function getPost(key: string): Promise<PostDocument> {
 }
 
 export async function listPost(filter: Partial<PostDocument>): Promise<PostListEntry[]> {
-    var docs = await db.query<PostDocument>(TABLE, filter, ["key", "userid", "rule", "recruitEndDate", "sessionDate"]);
+    var docs = await db.query<PostDocument>(TABLE, filter, ["key", "title", "rule", "mode", "recruitEndDate", "sessionDate"]);
     // TODO: pagination 
     return docs as PostListEntry[];
 }

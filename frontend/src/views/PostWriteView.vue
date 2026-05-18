@@ -105,17 +105,13 @@ async function submit() {
       ? new Date(form.value.recruitDeadline).toISOString()
       : ''
 
-    // title is folded into the first line of description so it survives the round trip
-    // since the backend schema doesn't have a title field.
-    const descWithTitle = form.value.title.trim()
-      ? `${form.value.title.trim()}\n\n${form.value.description}`
-      : form.value.description
-
     if (isEdit.value && editingId.value) {
       await editPost({
         key: editingId.value,
         rule: form.value.rule.trim(),
-        description: descWithTitle,
+        title: form.value.title,
+        description: form.value.description,
+        mode: form.value.mode,
         sessionDate: sessionDateIso,
         recruitEndDate: recruitEndIso,
       })
@@ -123,7 +119,9 @@ async function submit() {
     } else {
       await createPost({
         rule: form.value.rule.trim(),
-        description: descWithTitle,
+        title: form.value.title,
+        description: form.value.description,
+        mode: form.value.mode,
         sessionDate: sessionDateIso,
         recruitEndDate: recruitEndIso,
       })

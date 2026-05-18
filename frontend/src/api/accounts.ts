@@ -22,8 +22,7 @@ export class InvalidCredentialsError extends Error {
   }
 }
 
-export async function join(username: string, password: string): Promise<void> {
-  const passhash = await sha256Hex(password)
+export async function join(username: string, passhash: string): Promise<void> {
   try {
     await apiClient.post('/account/join', { username, passhash })
   } catch (err: unknown) {
@@ -34,10 +33,21 @@ export async function join(username: string, password: string): Promise<void> {
   }
 }
 
-export async function login(username: string, password: string): Promise<void> {
+export interface LoginResponse {
+  sessionId: string
+}
+
+export async function login(
+  username: string,
+  password: string,
+): Promise<LoginResponse> {
   const passhash = await sha256Hex(password)
   try {
-    await apiClient.post('/account/login', { username, passhash })
+    const res = await apiClient.post<LoginResponse>('/account/login', {
+      username,
+      passhash,
+    })
+    return res.data
   } catch (err: unknown) {
     const status = (err as { response?: { status?: number } })?.response?.status
     if (status === 401) throw new InvalidCredentialsError()

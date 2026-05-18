@@ -20,6 +20,7 @@ router.get('/post/:postid', async (req, res) => {
 router.post('/add', requireAuth, async (req, res) => {
   const post = req.body as PostDocument;
   post.userid = req.session.user!.userid;
+  post.creationDate = new Date();
   await createPost(post);
   res.sendStatus(200);
 });

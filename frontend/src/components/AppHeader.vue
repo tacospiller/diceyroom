@@ -4,8 +4,10 @@ import { ref } from 'vue'
 import searchIcon from '@/assets/icons/search.svg?raw'
 import notificationsIcon from '@/assets/icons/notifications.svg?raw'
 import logoIcon from '@/assets/icons/dice.svg?raw'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 interface NotificationItem {
   id: number
@@ -34,6 +36,21 @@ function navigate(to: string) {
   showProfileMenu.value = false
   router.push(to)
 }
+
+function logout() {
+  // TODO: call backend /account/logout once available.
+  userStore.clear()
+  showProfileMenu.value = false
+  router.push('/login')
+}
+
+function getProfilePic() {
+  if (userStore.isLoggedIn) {
+    return "https://api.dicebear.com/7.x/pixel-art-neutral/svg?seed=" + userStore.session.username;
+  } else {
+    return "";
+  }
+}
 </script>
 
 <template>
@@ -56,51 +73,58 @@ function navigate(to: string) {
     </div>
 
     <div class="header-actions">
-      <RouterLink to="/posts/new" class="create-btn">+ 구인글 쓰기</RouterLink>
+      <template v-if="userStore.isLoggedIn">
+        <RouterLink to="/posts/new" class="create-btn">+ 구인글 쓰기</RouterLink>
 
-      <div class="action-wrap">
-        <button
-          class="icon-btn"
-          aria-label="알림"
-          @click="toggleNotifications"
-        >
-          <span class="icon" v-html="notificationsIcon"></span>
-          <span v-if="notifications.length > 0" class="badge">
-            {{ notifications.length }}
-          </span>
-        </button>
-        <div v-if="showNotifications" class="dropdown notif-dropdown">
-          <div class="dropdown-header">알림</div>
-          <ul v-if="notifications.length > 0">
-            <li v-for="n in notifications" :key="n.id">
-              <div class="notif-text">{{ n.text }}</div>
-              <div class="notif-time">{{ n.time }}</div>
-            </li>
-          </ul>
-          <div v-else class="empty-notif">새 알림이 없습니다.</div>
+        <div class="action-wrap">
+          <button
+            class="icon-btn"
+            aria-label="알림"
+            @click="toggleNotifications"
+          >
+            <span class="icon" v-html="notificationsIcon"></span>
+            <span v-if="notifications.length > 0" class="badge">
+              {{ notifications.length }}
+            </span>
+          </button>
+          <div v-if="showNotifications" class="dropdown notif-dropdown">
+            <div class="dropdown-header">알림</div>
+            <ul v-if="notifications.length > 0">
+              <li v-for="n in notifications" :key="n.id">
+                <div class="notif-text">{{ n.text }}</div>
+                <div class="notif-time">{{ n.time }}</div>
+              </li>
+            </ul>
+            <div v-else class="empty-notif">새 알림이 없습니다.</div>
+          </div>
         </div>
-      </div>
 
-      <div class="action-wrap">
-        <button
-          class="profile-btn"
-          aria-label="프로필"
-          @click="toggleProfileMenu"
-        >
-          <img
-            src="https://api.dicebear.com/7.x/pixel-art/svg"
-            alt="profile"
-          />
-        </button>
-        <div v-if="showProfileMenu" class="dropdown profile-dropdown">
-          <ul>
-            <li @click="navigate('/profile')">내 프로필</li>
-            <li @click="navigate('/profile/posts')">내가 쓴 글</li>
-            <li @click="navigate('/profile/settings')">설정</li>
-            <li class="divider" @click="navigate('/login')">로그아웃</li>
-          </ul>
+        <div class="action-wrap">
+          <button
+            class="profile-btn"
+            aria-label="프로필"
+            @click="toggleProfileMenu"
+          >
+            <img
+              :src="getProfilePic()"
+              alt="profile"
+            />
+          </button>
+          <div v-if="showProfileMenu" class="dropdown profile-dropdown">
+            <ul>
+              <li @click="navigate('/profile')">내 프로필</li>
+              <li @click="navigate('/profile/posts')">내가 쓴 글</li>
+              <li @click="navigate('/profile/settings')">설정</li>
+              <li class="divider" @click="logout">로그아웃</li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </template>
+
+      <template v-else>
+        <RouterLink to="/login" class="ghost-btn">로그인</RouterLink>
+        <RouterLink to="/signup" class="create-btn">회원가입</RouterLink>
+      </template>
     </div>
   </header>
 </template>
@@ -209,6 +233,26 @@ function navigate(to: string) {
 
 .create-btn:hover {
   background: var(--color-red-hover);
+}
+
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.ghost-btn:hover {
+  background: var(--color-red-soft);
+  border-color: var(--color-red);
+  color: var(--color-red);
 }
 
 .action-wrap {

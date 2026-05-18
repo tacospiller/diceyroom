@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { join, InvalidUsernameError, UsernameTakenError } from '@/api/accounts'
+import { sha256Hex } from '@/api/hash'
 
 const router = useRouter()
 
@@ -48,7 +49,8 @@ async function submit() {
   errorMsg.value = ''
   submitting.value = true
   try {
-    await join(username.value.trim(), password.value)
+    const passhash = await sha256Hex(password.value)
+    await join(username.value.trim(), passhash)
     router.push('/login')
   } catch (err) {
     if (err instanceof UsernameTakenError) {
@@ -73,7 +75,6 @@ async function submit() {
       </div>
 
       <h1>회원가입</h1>
-      <p class="sub">DiceyRoom 의 일원이 되어보세요.</p>
 
       <form class="form" @submit.prevent="submit">
         <div class="field">
@@ -206,7 +207,18 @@ h1 {
 
 .field input:focus {
   outline: none;
-  border-color: var(--color-red);
+  border-color: var(--color-border);
+  animation: focus-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes focus-pulse {
+  0%,
+  100% {
+    border-color: rgba(255, 253, 219, 0.2);
+  }
+  50% {
+    border-color: rgba(255, 253, 219, 1);
+  }
 }
 
 .error {

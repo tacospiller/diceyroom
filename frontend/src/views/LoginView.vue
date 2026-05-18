@@ -2,8 +2,10 @@
 import { ref, computed } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { login, InvalidCredentialsError } from '@/api/accounts'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const username = ref('')
 const password = ref('')
@@ -23,7 +25,8 @@ async function submit() {
   errorMsg.value = ''
   submitting.value = true
   try {
-    await login(username.value.trim(), password.value)
+    const session = await login(username.value.trim(), password.value)
+    userStore.setSession(session)
     router.push('/')
   } catch (err) {
     if (err instanceof InvalidCredentialsError) {

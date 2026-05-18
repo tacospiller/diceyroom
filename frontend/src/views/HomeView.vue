@@ -1,13 +1,25 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import { listPosts, type PostListEntry } from '@/api/posts'
+import { listPosts, type PostListEntry, type PostMode } from '@/api/posts'
 
 const posts = ref<PostListEntry[]>([])
 const loading = ref(true)
 const errorMsg = ref('')
 
 const sortBy = ref<'latest' | 'popular'>('latest')
+
+const MODE_LABEL: Record<PostMode, string> = {
+  text: '텍스트',
+  voice: '보이스',
+  offline: '오프라인',
+  other: '기타',
+}
+
+function modeClass(m: PostMode | string | undefined): PostMode {
+  if (m === 'text' || m === 'voice' || m === 'offline' || m === 'other') return m
+  return 'other'
+}
 
 function fmtDate(s: string): string {
   if (!s) return '-'
@@ -71,7 +83,7 @@ onMounted(async () => {
             <tr>
               <th class="col-title">제목</th>
               <th class="col-rule">룰</th>
-              <th class="col-author">작성자</th>
+              <th class="col-mode">세션 방식</th>
               <th class="col-date">세션 일정</th>
               <th class="col-date">모집 마감</th>
             </tr>
@@ -79,10 +91,14 @@ onMounted(async () => {
           <tbody>
             <tr v-for="post in sorted" :key="post.key">
               <td class="title-cell">
-                <RouterLink :to="`/posts/${post.key}`">[{{ post.rule }}] 구인글 보기</RouterLink>
+                <RouterLink :to="`/posts/${post.key}`">{{ post.title }}</RouterLink>
               </td>
               <td>{{ post.rule }}</td>
-              <td>{{ post.userid }}</td>
+              <td>
+                <span class="mode-pill" :class="modeClass(post.mode)">
+                  {{ MODE_LABEL[modeClass(post.mode)] }}
+                </span>
+              </td>
               <td class="date-cell">{{ fmtDate(post.sessionDate) }}</td>
               <td class="date-cell">{{ fmtDate(post.recruitEndDate) }}</td>
             </tr>
@@ -203,8 +219,8 @@ onMounted(async () => {
   width: 160px;
 }
 
-.col-author {
-  width: 140px;
+.col-mode {
+  width: 110px;
 }
 
 .col-date {
