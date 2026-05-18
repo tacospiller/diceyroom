@@ -3,6 +3,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import { ref } from 'vue'
 import searchIcon from '@/assets/icons/search.svg?raw'
 import notificationsIcon from '@/assets/icons/notifications.svg?raw'
+import logoIcon from '@/assets/icons/dice.svg?raw'
 
 const router = useRouter()
 
@@ -38,7 +39,7 @@ function navigate(to: string) {
 <template>
   <header class="site-header">
     <RouterLink to="/" class="logo">
-      <span class="logo-icon">🎲</span>
+      <span class="logo-icon" v-html="logoIcon"></span>
       <span class="logo-text">DiceyRoom</span>
     </RouterLink>
 
@@ -128,7 +129,17 @@ function navigate(to: string) {
 }
 
 .logo-icon {
-  font-size: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.logo-icon :deep(svg) {
+  width: 36px;
+  height: 36px;
+  display: block;
+  fill: var(--color-red);
 }
 
 .search-wrapper {
