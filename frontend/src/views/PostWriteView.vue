@@ -286,25 +286,6 @@ function cancel() {
 .field select,
 .field textarea {
   width: 100%;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 0.55rem 0.75rem;
-  background: var(--color-background);
-  color: var(--color-text);
-  font-family: inherit;
-  font-size: 0.92rem;
-}
-
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
-  outline: none;
-  border-color: var(--color-red);
-}
-
-.field textarea {
-  resize: vertical;
-  line-height: 1.6;
 }
 
 .row {

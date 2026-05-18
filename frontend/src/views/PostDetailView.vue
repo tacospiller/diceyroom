@@ -390,19 +390,6 @@ function submitComment() {
 
 .comment-form textarea {
   width: 100%;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 0.6rem 0.85rem;
-  background: var(--color-background);
-  color: var(--color-text);
-  font-family: inherit;
-  font-size: 0.9rem;
-  resize: vertical;
-}
-
-.comment-form textarea:focus {
-  outline: none;
-  border-color: var(--color-red);
 }
 
 .comment-form button {

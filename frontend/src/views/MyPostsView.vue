@@ -33,9 +33,9 @@ function deriveStatus(p: PostListEntry): Status {
 }
 
 function fmtDate(s: string): string {
-  if (!s) return ''
+  if (!s) return undefined
   const d = new Date(s)
-  if (Number.isNaN(d.getTime())) return s
+  if (Number.isNaN(d.getTime())) return undefined
   return d.toISOString().slice(0, 10)
 }
 
@@ -128,9 +128,9 @@ function remove(_id: string) {
         <div class="row2">
           <span>{{ p.rule }}</span>
           <span class="dot">·</span>
-          <span>세션 {{ fmtDate(p.sessionDate) }}</span>
+          <span>세션 {{ fmtDate(p.sessionDate) ?? "미정" }}</span>
           <span class="dot">·</span>
-          <span>마감 {{ fmtDate(p.recruitEndDate) }}</span>
+          <span>마감 {{ fmtDate(p.recruitEndDate) ?? "미정" }}</span>
         </div>
         <div class="row3">
           <RouterLink :to="`/posts/${p.key}/edit`" class="link-btn">수정</RouterLink>

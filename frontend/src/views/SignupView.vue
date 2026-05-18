@@ -196,31 +196,6 @@ h1 {
   font-weight: 600;
 }
 
-.field input {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 0.55rem 0.75rem;
-  background: var(--color-background);
-  color: var(--color-text);
-  font-size: 0.92rem;
-}
-
-.field input:focus {
-  outline: none;
-  border-color: var(--color-border);
-  animation: focus-pulse 1.4s ease-in-out infinite;
-}
-
-@keyframes focus-pulse {
-  0%,
-  100% {
-    border-color: rgba(255, 253, 219, 0.2);
-  }
-  50% {
-    border-color: rgba(255, 253, 219, 1);
-  }
-}
-
 .error {
   color: var(--color-red);
   font-size: 0.78rem;

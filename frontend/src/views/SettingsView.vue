@@ -242,27 +242,6 @@ function deleteAccount() {
   font-weight: 600;
 }
 
-.field input,
-.field textarea {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 0.55rem 0.75rem;
-  background: var(--color-background);
-  color: var(--color-text);
-  font-family: inherit;
-  font-size: 0.92rem;
-}
-
-.field input:focus,
-.field textarea:focus {
-  outline: none;
-  border-color: var(--color-red);
-}
-
-.field textarea {
-  resize: vertical;
-}
-
 .actions {
   display: flex;
   justify-content: flex-end;

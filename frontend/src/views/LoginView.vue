@@ -157,20 +157,6 @@ h1 {
   font-weight: 600;
 }
 
-.field input {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 0.55rem 0.75rem;
-  background: var(--color-background);
-  color: var(--color-text);
-  font-size: 0.92rem;
-}
-
-.field input:focus {
-  outline: none;
-  border-color: var(--color-red);
-}
-
 .remember {
   display: inline-flex;
   align-items: center;

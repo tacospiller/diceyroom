@@ -81,23 +81,23 @@ onMounted(async () => {
         <table class="post-table">
           <thead>
             <tr>
-              <th class="col-title">제목</th>
               <th class="col-rule">룰</th>
               <th class="col-mode">세션 방식</th>
+              <th class="col-title">제목</th>
               <th class="col-date">세션 일정</th>
               <th class="col-date">모집 마감</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="post in sorted" :key="post.key">
-              <td class="title-cell">
-                <RouterLink :to="`/posts/${post.key}`">{{ post.title }}</RouterLink>
-              </td>
               <td>{{ post.rule }}</td>
               <td>
                 <span class="mode-pill" :class="modeClass(post.mode)">
                   {{ MODE_LABEL[modeClass(post.mode)] }}
                 </span>
+              </td>
+              <td class="title-cell">
+                <RouterLink :to="`/posts/${post.key}`">{{ post.title }}</RouterLink>
               </td>
               <td class="date-cell">{{ fmtDate(post.sessionDate) }}</td>
               <td class="date-cell">{{ fmtDate(post.recruitEndDate) }}</td>
