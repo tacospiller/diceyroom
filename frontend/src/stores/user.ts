@@ -2,8 +2,6 @@ import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 
 export interface Session {
-  sessionid: string,
-  username: string,
   userid: string
 }
 

@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
-import { createPost, editPost, getPost, listPost, PostDocument } from '../services/post';
+import { createPost, editPost, getPost, listPost, PostCreationRequest, PostFilter } from '../services/post';
 
 const router = Router();
 
 router.get('/list', async (req, res) => {
-  const filter = (req.query ?? {}) as Partial<PostDocument>;
+  const filter = (req.query ?? {}) as PostFilter;
   const list = await listPost(filter);
   // TODO: pagination
   res.status(200).json(list);
@@ -13,22 +13,19 @@ router.get('/list', async (req, res) => {
 
 router.get('/post/:postid', async (req, res) => {
   const postid = req.params["postid"];
-  const post = await getPost(postid);
+  const post = await getPost(req.session.user!.userid, postid);
   res.status(200).json(post);
 });
 
 router.post('/add', requireAuth, async (req, res) => {
-  const post = req.body as PostDocument;
-  post.userid = req.session.user!.userid;
-  post.creationDate = new Date();
-  await createPost(post);
+  const post = req.body as PostCreationRequest;
+  await createPost(req.session.user!.userid, post);
   res.sendStatus(200);
 });
 
-router.post('/edit', requireAuth, async (req, res) => {
-  const post = req.body as PostDocument;
-  post.userid = req.session.user!.userid;
-  await editPost(post);
+router.post('/edit/:postid', requireAuth, async (req, res) => {
+  const post = req.body as PostCreationRequest;
+  await editPost(req.session.user!.userid, req.params["postid"], post);
   res.sendStatus(200);
 });
 

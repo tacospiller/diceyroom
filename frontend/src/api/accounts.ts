@@ -34,7 +34,7 @@ export async function join(username: string, passhash: string): Promise<void> {
 }
 
 export interface LoginResponse {
-  sessionId: string
+  userid: string
 }
 
 export async function login(

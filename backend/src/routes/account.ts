@@ -25,8 +25,8 @@ router.post('/login', async (req, res) => {
     return;
   }
   const sid = nanoid();
-  req.session.user = { username: user.username, userid: user.userid, sessionid:sid };
-  res.status(200).json({ username: user.username, userid: user.userid, sessionId: sid });
+  req.session.user = { userid: user.userId };
+  res.status(200).json({ userid: user.userId });
 });
 
 export default router;
