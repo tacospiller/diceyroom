@@ -4,6 +4,7 @@
   --color-text: #fffddb;
   --color-text-muted: rgba(255, 253, 219, 0.8);
   --color-border: rgba(255, 253, 219, 0.8);
+  --color-faded-border: rgba(255, 253, 219, 0.4);
   --color-red: #ff3831;
   --color-red-hover: #e61707;
   --color-red-soft: rgba(255, 56, 49, 0.12);

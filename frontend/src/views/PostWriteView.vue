@@ -7,6 +7,8 @@ import AutocompleteInput from '@/components/AutocompleteInput.vue'
 
 const metaStore = useMetaStore()
 
+const PRESET_SESSION_MODES = new Set(['text', 'voice', 'offline', 'other'])
+
 const sessionModeOptions = [
   { value: 'text', label: '텍스트' },
   { value: 'voice', label: '보이스' },
@@ -14,22 +16,35 @@ const sessionModeOptions = [
   { value: 'other', label: '기타' },
 ]
 
-const PRESET_SESSION_MODES = new Set(['text', 'voice', 'offline', 'other'])
+const sessionDateTypeOptions = [
+  { value: 'fixed', label: '특정 날짜' },
+  { value: 'range', label: '협의' },
+  { value: 'autodate', label: '다이시룸 일정조정 툴 사용' },
+]
+
+const authorParticipateTypeOptions = [
+  { value: 'gm', label: 'GM이에요' },
+  { value: 'player', label: '플레이어예요' },
+  { value: 'undecided', label: '미정이에요' },
+  { value: 'none', label: '어느 쪽도 아니에요' },
+]
 
 interface PostForm {
   title: string
   rule: string
   sessionMode: string
   sessionModeOther: string
+  sessionLocation: string
   sessionDateType: string
   sessionFixedDate: string
+  sessionRangeDetails: string
+  recruitEndsAt: string
   gmLimit: number
   playerLimit: number
-  recruitEndsAt: string
-  description: string
+  authorParticipateType: string
   publishParticipants: boolean
   acceptJoinRequests: boolean
-  authorParticipateType: string
+  description: string
 }
 
 const route = useRoute()
@@ -47,15 +62,17 @@ const form = ref<PostForm>({
   rule: '',
   sessionMode: 'voice',
   sessionModeOther: '',
+  sessionLocation: '',
   sessionDateType: 'fixed',
   sessionFixedDate: '',
+  sessionRangeDetails: '',
+  recruitEndsAt: '',
   gmLimit: 1,
   playerLimit: 4,
-  recruitEndsAt: '',
-  description: '',
-  publishParticipants: false,
-  acceptJoinRequests: false,
   authorParticipateType: 'gm',
+  publishParticipants: true,
+  acceptJoinRequests: false,
+  description: '',
 })
 
 const submitting = ref(false)
@@ -87,15 +104,17 @@ onMounted(async () => {
       rule: doc.rule,
       sessionMode: isPreset ? doc.sessionMode : 'other',
       sessionModeOther: isPreset ? '' : doc.sessionMode,
+      sessionLocation: doc.sessionLocation ?? '',
       sessionDateType: doc.sessionDateType,
       sessionFixedDate: toDateTimeLocal(String(doc.sessionFixedDate ?? '')),
+      sessionRangeDetails: doc.sessionRangeDetails ?? '',
+      recruitEndsAt: toDateInput(String(doc.recruitEndsAt ?? '')),
       gmLimit: doc.gmLimit,
       playerLimit: doc.playerLimit,
-      recruitEndsAt: toDateInput(String(doc.recruitEndsAt ?? '')),
-      description: doc.description ?? '',
+      authorParticipateType: 'gm',
       publishParticipants: doc.publishParticipants,
       acceptJoinRequests: doc.acceptJoinRequests,
-      authorParticipateType: 'gm',
+      description: doc.description ?? '',
     }
   } catch (err) {
     if (err instanceof PostNotFoundError) {
@@ -113,9 +132,7 @@ const ruleError = computed(() =>
   form.value.rule.trim().length === 0 ? '룰 시스템을 입력해 주세요.' : '',
 )
 const descError = computed(() =>
-  form.value.description.trim().length < 10
-    ? '소개는 10자 이상 작성해 주세요.'
-    : '',
+  form.value.description.trim().length < 10 ? '소개는 10자 이상 작성해 주세요.' : '',
 )
 
 const canSubmit = computed(
@@ -138,11 +155,14 @@ async function submit() {
       rule: form.value.rule.trim(),
       title: form.value.title,
       description: form.value.description,
-      sessionMode: form.value.sessionMode === 'other'
-        ? (form.value.sessionModeOther.trim() || 'other')
-        : form.value.sessionMode,
+      sessionMode:
+        form.value.sessionMode === 'other'
+          ? form.value.sessionModeOther.trim() || 'other'
+          : form.value.sessionMode,
+      sessionLocation: form.value.sessionLocation.trim() || undefined,
       sessionDateType: form.value.sessionDateType,
       sessionFixedDate,
+      sessionRangeDetails: form.value.sessionRangeDetails.trim() || undefined,
       gmLimit: form.value.gmLimit,
       playerLimit: form.value.playerLimit,
       recruitEndsAt,
@@ -185,19 +205,26 @@ function cancel() {
     <div v-if="loadError" class="error-msg">{{ loadError }}</div>
 
     <form v-else class="form" @submit.prevent="submit">
-      <div class="field">
-        <label for="title">제목 <span class="req">*</span></label>
-        <input
-          id="title"
-          v-model="form.title"
-          type="text"
-          placeholder="ex) "
-          maxlength="80"
-        />
-        <small v-if="titleError" class="error">{{ titleError }}</small>
-      </div>
 
-      <div class="row">
+      <!-- 제목 -->
+      <section class="section">
+        <div class="field">
+          <label for="title">제목 <span class="req">*</span></label>
+          <input
+            id="title"
+            v-model="form.title"
+            type="text"
+            placeholder="ex) [CoC 7e] 입문자 환영, 원샷 모집합니다"
+            maxlength="80"
+          />
+          <small v-if="titleError" class="error">{{ titleError }}</small>
+        </div>
+      </section>
+
+      <!-- 세션은 어떻게 진행되나요? -->
+      <section class="section">
+        <h2 class="section-title">세션은 어떻게 진행되나요?</h2>
+
         <div class="field">
           <label for="rule">사용 룰 <span class="req">*</span></label>
           <AutocompleteInput
@@ -207,40 +234,138 @@ function cancel() {
           />
           <small v-if="ruleError" class="error">{{ ruleError }}</small>
         </div>
-      </div>
 
-      <div class="row">
         <div class="field">
-          <label>진행 방식</label>
+          <span class="field-label">진행 방식</span>
           <div class="radio-group">
             <template v-for="opt in sessionModeOptions" :key="opt.value">
-              <input type="radio" v-model="form.sessionMode" :id="opt.value" :value="opt.value" />
-              <template v-if="opt.value !== 'other'"><label :for="opt.value" class="radio-label">{{ opt.label }}</label></template>
+              <input type="radio" v-model="form.sessionMode" :id="'mode-' + opt.value" :value="opt.value" />
+              <template v-if="opt.value !== 'other'">
+                <label :for="'mode-' + opt.value" class="radio-label">{{ opt.label }}</label>
+              </template>
               <template v-else>
+                <label :for="'mode-' + opt.value" class="radio-label">
+                  {{ opt.label }}
+                  
+                </label>
                 <input
-                  v-model="form.sessionModeOther"
-                  type="text"
-                  class="other-input"
-                  placeholder="직접 입력"
-                  @focus="form.sessionMode = 'other'"
-                />
+                    v-model="form.sessionModeOther"
+                    type="text"
+                    class="other-input"
+                    placeholder="직접 입력"
+                    :disabled="form.sessionMode !== 'other'"
+                    @focus="form.sessionMode = 'other'"
+                  />
               </template>
             </template>
           </div>
         </div>
 
-      </div>
+        <div class="field">
+          <label for="location">세션 툴 또는 장소 <span class="optional">선택</span></label>
+          <input
+            id="location"
+            v-model="form.sessionLocation"
+            type="text"
+            placeholder="ex) Discord, Foundry VTT, 홍대 보드게임 카페"
+          />
+        </div>
+      </section>
 
-      <div class="field">
-        <label for="desc">소개 <span class="req">*</span></label>
-        <textarea
-          id="desc"
-          v-model="form.description"
-          rows="10"
-          placeholder="시나리오, 진행 방식, 준비물, 모집 대상 등을 자유롭게 적어주세요."
-        ></textarea>
-        <small v-if="descError" class="error">{{ descError }}</small>
-      </div>
+      <!-- 언제 진행되나요? -->
+      <section class="section">
+        <h2 class="section-title">언제 진행되나요?</h2>
+
+        <div class="field">
+          <span class="field-label">세션 일정</span>
+          <div class="radio-group">
+            <template v-for="opt in sessionDateTypeOptions" :key="opt.value">
+              <input type="radio" v-model="form.sessionDateType" :id="'dt-' + opt.value" :value="opt.value" />
+              <label :for="'dt-' + opt.value" class="radio-label">{{ opt.label }}</label>
+            </template>
+          </div>
+        </div>
+
+        <div v-if="form.sessionDateType === 'fixed'" class="field">
+          <label for="session-date">세션 날짜</label>
+          <input id="session-date" v-model="form.sessionFixedDate" type="datetime-local" />
+        </div>
+
+        <div v-if="form.sessionDateType === 'range'" class="field">
+          <label for="range-details">세션 날짜 범위 <span class="optional">선택</span></label>
+          <input
+            id="range-details"
+            v-model="form.sessionRangeDetails"
+            type="text"
+            placeholder="ex) 3월 중 주말, 평일 저녁 가능"
+          />
+        </div>
+
+        <div class="field">
+          <label for="deadline">모집 마감 일자 <span class="optional">선택</span></label>
+          <input id="deadline" v-model="form.recruitEndsAt" type="date" />
+        </div>
+      </section>
+
+      <!-- 누가 참여하나요? -->
+      <section class="section">
+        <h2 class="section-title">누가 참여하나요?</h2>
+
+        <div class="row">
+          <div class="field">
+            <label for="gm-limit">GM 인원</label>
+            <input id="gm-limit" v-model.number="form.gmLimit" type="number" min="0" max="10" />
+          </div>
+          <div class="field">
+            <label for="player-limit">플레이어 인원</label>
+            <input id="player-limit" v-model.number="form.playerLimit" type="number" min="1" max="20" />
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field-label">저(작성자)는</span>
+          <div class="radio-group">
+            <template v-for="opt in authorParticipateTypeOptions" :key="opt.value">
+              <input type="radio" v-model="form.authorParticipateType" :id="'apt-' + opt.value" :value="opt.value" />
+              <label :for="'apt-' + opt.value" class="radio-label">{{ opt.label }}</label>
+            </template>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field-label">참여자 프로필 공개</span>
+          <div class="radio-group">
+            <input type="radio" id="pub-yes" v-model="form.publishParticipants" :value="true" />
+            <label for="pub-yes" class="radio-label">공개</label>
+            <input type="radio" id="pub-no" v-model="form.publishParticipants" :value="false" />
+            <label for="pub-no" class="radio-label">비공개</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field-label">다이시룸에서 참가 신청 받기</span>
+          <div class="radio-group">
+            <input type="radio" id="req-yes" v-model="form.acceptJoinRequests" :value="true" />
+            <label for="req-yes" class="radio-label">받을래요</label>
+            <input type="radio" id="req-no" v-model="form.acceptJoinRequests" :value="false" />
+            <label for="req-no" class="radio-label">안 받을래요</label>
+          </div>
+        </div>
+      </section>
+
+      <!-- 소개글 -->
+      <section class="section">
+        <h2 class="section-title">소개글 <span class="req">*</span></h2>
+        <div class="field">
+          <textarea
+            id="desc"
+            v-model="form.description"
+            rows="10"
+            placeholder="시나리오, 진행 방식, 준비물, 모집 대상 등을 자유롭게 적어주세요."
+          ></textarea>
+          <small v-if="descError" class="error">{{ descError }}</small>
+        </div>
+      </section>
 
       <p v-if="submitError" class="error-msg">{{ submitError }}</p>
 
@@ -255,6 +380,22 @@ function cancel() {
 </template>
 
 <style scoped>
+input[type='text'],
+input[type='date'],
+input[type='datetime-local'],
+input[type='number'],
+textarea,
+select {
+  border: 1px solid var(--color-faded-border);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.92rem;
+}
+
+
 .post-write {
   max-width: 760px;
   margin: 0 auto;
@@ -279,11 +420,31 @@ function cancel() {
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 0;
   border: 1px solid var(--color-border);
   border-radius: 12px;
-  padding: 1.5rem;
   background: var(--color-background);
+  overflow: hidden;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  padding-bottom: 3rem;
+}
+
+.section:last-of-type {
+  border-bottom: none;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .field {
@@ -292,14 +453,22 @@ function cancel() {
   gap: 0.4rem;
 }
 
-.field label {
-  font-size: 1.2rem;
-  opacity: 0.8;
+.field label,
+.field-label {
+  font-size: 0.9rem;
+  opacity: 0.75;
   font-weight: 600;
 }
 
 .req {
   color: var(--color-red);
+}
+
+.optional {
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.6;
+  margin-left: 0.25rem;
 }
 
 .field input,
@@ -310,10 +479,11 @@ function cancel() {
 
 .row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 0.85rem;
 }
 
+/* radio group */
 .radio-group {
   display: flex;
   flex-wrap: wrap;
@@ -336,7 +506,7 @@ function cancel() {
   justify-content: center;
   gap: 0.4rem;
   padding: 0.4rem 0.75rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-faded-border);
   border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 400;
@@ -348,7 +518,7 @@ function cancel() {
 
 .radio-group .radio-label:hover {
   opacity: 1;
-  border-color: var(--color-text);
+  border-color: var(--color-border);
 }
 
 .radio-group input[type='radio']:checked + .radio-label {
@@ -362,17 +532,18 @@ function cancel() {
   flex: 3;
   min-width: 60px;
   font-size: 0.85rem;
-  border-color: var(--color-border);
+  border: none;
   outline: none;
   background: transparent;
   color: inherit;
-  opacity: 0.7;
 }
 
-.other-input:hover {
-  opacity: 1;
+.other-input:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
+/* misc */
 .error {
   color: var(--color-red);
   font-size: 0.78rem;
@@ -385,14 +556,14 @@ function cancel() {
   border: 1px solid rgba(255, 56, 49, 0.35);
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
-  margin: 0;
+  margin: 1rem 1.5rem 0;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
-  margin-top: 0.25rem;
+  padding: 1rem 1.5rem;
 }
 
 .primary-btn {

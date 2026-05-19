@@ -106,6 +106,18 @@ onBeforeUnmount(() => document.removeEventListener('mousedown', onClickOutside))
 </template>
 
 <style scoped>
+input[type='text'],
+textarea,
+select {
+  border: 1px solid var(--color-faded-border);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.92rem;
+}
+
 .autocomplete {
   position: relative;
   width: 100%;
