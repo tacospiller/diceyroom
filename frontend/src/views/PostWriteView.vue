@@ -3,17 +3,19 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { createPost, editPost, getPost, PostNotFoundError } from '@/api/posts'
 
-type Mode = 'text' | 'voice' | 'offline' | 'other'
-
 interface PostForm {
-  // title/mode/maxMembers are UI-only — backend PostDocument does not store them.
   title: string
   rule: string
-  mode: Mode
-  maxMembers: number
-  sessionDate: string
-  recruitDeadline: string
+  sessionMode: string
+  sessionDateType: string
+  sessionFixedDate: string
+  gmLimit: number
+  playerLimit: number
+  recruitEndsAt: string
   description: string
+  publishParticipants: boolean
+  acceptJoinRequests: boolean
+  authorParticipateType: string
 }
 
 const route = useRoute()
@@ -29,11 +31,16 @@ const isEdit = computed(() => editingId.value !== null)
 const form = ref<PostForm>({
   title: '',
   rule: '',
-  mode: 'voice',
-  maxMembers: 4,
-  sessionDate: '',
-  recruitDeadline: '',
+  sessionMode: 'voice',
+  sessionDateType: 'fixed',
+  sessionFixedDate: '',
+  gmLimit: 1,
+  playerLimit: 4,
+  recruitEndsAt: '',
   description: '',
+  publishParticipants: false,
+  acceptJoinRequests: false,
+  authorParticipateType: 'gm',
 })
 
 const submitting = ref(false)
@@ -60,13 +67,18 @@ onMounted(async () => {
   try {
     const doc = await getPost(editingId.value as string)
     form.value = {
-      title: '',
+      title: doc.title,
       rule: doc.rule,
-      mode: 'voice',
-      maxMembers: 4,
-      sessionDate: toDateTimeLocal(doc.sessionDate),
-      recruitDeadline: toDateInput(doc.recruitEndDate),
-      description: doc.description,
+      sessionMode: doc.sessionMode,
+      sessionDateType: doc.sessionDateType,
+      sessionFixedDate: toDateTimeLocal(String(doc.sessionFixedDate ?? '')),
+      gmLimit: doc.gmLimit,
+      playerLimit: doc.playerLimit,
+      recruitEndsAt: toDateInput(String(doc.recruitEndsAt ?? '')),
+      description: doc.description ?? '',
+      publishParticipants: doc.publishParticipants,
+      acceptJoinRequests: doc.acceptJoinRequests,
+      authorParticipateType: 'gm',
     }
   } catch (err) {
     if (err instanceof PostNotFoundError) {
@@ -98,33 +110,33 @@ async function submit() {
   submitError.value = ''
   submitting.value = true
   try {
-    const sessionDateIso = form.value.sessionDate
-      ? new Date(form.value.sessionDate).toISOString()
-      : ''
-    const recruitEndIso = form.value.recruitDeadline
-      ? new Date(form.value.recruitDeadline).toISOString()
-      : ''
+    const sessionFixedDate = form.value.sessionFixedDate
+      ? new Date(form.value.sessionFixedDate)
+      : undefined
+    const recruitEndsAt = form.value.recruitEndsAt
+      ? new Date(form.value.recruitEndsAt).toISOString()
+      : undefined
+
+    const payload = {
+      rule: form.value.rule.trim(),
+      title: form.value.title,
+      description: form.value.description,
+      sessionMode: form.value.sessionMode,
+      sessionDateType: form.value.sessionDateType,
+      sessionFixedDate,
+      gmLimit: form.value.gmLimit,
+      playerLimit: form.value.playerLimit,
+      recruitEndsAt,
+      publishParticipants: form.value.publishParticipants,
+      acceptJoinRequests: form.value.acceptJoinRequests,
+      authorParticipateType: form.value.authorParticipateType,
+    }
 
     if (isEdit.value && editingId.value) {
-      await editPost({
-        key: editingId.value,
-        rule: form.value.rule.trim(),
-        title: form.value.title,
-        description: form.value.description,
-        mode: form.value.mode,
-        sessionDate: sessionDateIso,
-        recruitEndDate: recruitEndIso,
-      })
+      await editPost(payload)
       router.push(`/posts/${editingId.value}`)
     } else {
-      await createPost({
-        rule: form.value.rule.trim(),
-        title: form.value.title,
-        description: form.value.description,
-        mode: form.value.mode,
-        sessionDate: sessionDateIso,
-        recruitEndDate: recruitEndIso,
-      })
+      await createPost(payload)
       router.push('/profile/posts')
     }
   } catch (err: unknown) {
@@ -180,7 +192,7 @@ function cancel() {
 
         <div class="field">
           <label for="mode">진행 방식</label>
-          <select id="mode" v-model="form.mode">
+          <select id="mode" v-model="form.sessionMode">
             <option value="text">텍스트</option>
             <option value="voice">보이스</option>
             <option value="offline">오프라인</option>
@@ -189,12 +201,23 @@ function cancel() {
         </div>
 
         <div class="field">
-          <label for="max">최대 인원</label>
+          <label for="gmLimit">GM 인원</label>
           <input
-            id="max"
-            v-model.number="form.maxMembers"
+            id="gmLimit"
+            v-model.number="form.gmLimit"
             type="number"
-            min="2"
+            min="1"
+            max="10"
+          />
+        </div>
+
+        <div class="field">
+          <label for="playerLimit">플레이어 인원</label>
+          <input
+            id="playerLimit"
+            v-model.number="form.playerLimit"
+            type="number"
+            min="1"
             max="20"
           />
         </div>
@@ -203,12 +226,12 @@ function cancel() {
       <div class="row">
         <div class="field">
           <label for="session">세션 일정</label>
-          <input id="session" v-model="form.sessionDate" type="datetime-local" />
+          <input id="session" v-model="form.sessionFixedDate" type="datetime-local" />
         </div>
 
         <div class="field">
           <label for="deadline">모집 마감일</label>
-          <input id="deadline" v-model="form.recruitDeadline" type="date" />
+          <input id="deadline" v-model="form.recruitEndsAt" type="date" />
         </div>
       </div>
 
