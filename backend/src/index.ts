@@ -3,6 +3,7 @@ import cors from 'cors';
 import session from 'express-session';
 import accountRouter from './routes/account';
 import postRouter from './routes/post';
+import metaRouter from './routes/meta';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -22,6 +23,7 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/account', accountRouter);
 app.use('/api/post', postRouter);
+app.use('/api/meta', metaRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

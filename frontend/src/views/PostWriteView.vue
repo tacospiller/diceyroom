@@ -2,11 +2,25 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { createPost, editPost, getPost, PostNotFoundError } from '@/api/posts'
+import { useMetaStore } from '@/stores/meta'
+import AutocompleteInput from '@/components/AutocompleteInput.vue'
+
+const metaStore = useMetaStore()
+
+const sessionModeOptions = [
+  { value: 'text', label: '텍스트' },
+  { value: 'voice', label: '보이스' },
+  { value: 'offline', label: '오프라인' },
+  { value: 'other', label: '기타' },
+]
+
+const PRESET_SESSION_MODES = new Set(['text', 'voice', 'offline', 'other'])
 
 interface PostForm {
   title: string
   rule: string
   sessionMode: string
+  sessionModeOther: string
   sessionDateType: string
   sessionFixedDate: string
   gmLimit: number
@@ -32,6 +46,7 @@ const form = ref<PostForm>({
   title: '',
   rule: '',
   sessionMode: 'voice',
+  sessionModeOther: '',
   sessionDateType: 'fixed',
   sessionFixedDate: '',
   gmLimit: 1,
@@ -66,10 +81,12 @@ onMounted(async () => {
   if (!isEdit.value) return
   try {
     const doc = await getPost(editingId.value as string)
+    const isPreset = PRESET_SESSION_MODES.has(doc.sessionMode)
     form.value = {
       title: doc.title,
       rule: doc.rule,
-      sessionMode: doc.sessionMode,
+      sessionMode: isPreset ? doc.sessionMode : 'other',
+      sessionModeOther: isPreset ? '' : doc.sessionMode,
       sessionDateType: doc.sessionDateType,
       sessionFixedDate: toDateTimeLocal(String(doc.sessionFixedDate ?? '')),
       gmLimit: doc.gmLimit,
@@ -121,7 +138,9 @@ async function submit() {
       rule: form.value.rule.trim(),
       title: form.value.title,
       description: form.value.description,
-      sessionMode: form.value.sessionMode,
+      sessionMode: form.value.sessionMode === 'other'
+        ? (form.value.sessionModeOther.trim() || 'other')
+        : form.value.sessionMode,
       sessionDateType: form.value.sessionDateType,
       sessionFixedDate,
       gmLimit: form.value.gmLimit,
@@ -172,7 +191,7 @@ function cancel() {
           id="title"
           v-model="form.title"
           type="text"
-          placeholder="예: [D&D 5e] 입문자 환영, 원샷 모집합니다"
+          placeholder="ex) "
           maxlength="80"
         />
         <small v-if="titleError" class="error">{{ titleError }}</small>
@@ -180,59 +199,36 @@ function cancel() {
 
       <div class="row">
         <div class="field">
-          <label for="rule">룰 시스템 <span class="req">*</span></label>
-          <input
-            id="rule"
+          <label for="rule">사용 룰 <span class="req">*</span></label>
+          <AutocompleteInput
             v-model="form.rule"
-            type="text"
-            placeholder="예: D&D 5e, Call of Cthulhu 7e"
+            :options="metaStore.rules"
+            placeholder="ex) 크툴루의 부름"
           />
           <small v-if="ruleError" class="error">{{ ruleError }}</small>
-        </div>
-
-        <div class="field">
-          <label for="mode">진행 방식</label>
-          <select id="mode" v-model="form.sessionMode">
-            <option value="text">텍스트</option>
-            <option value="voice">보이스</option>
-            <option value="offline">오프라인</option>
-            <option value="other">기타</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="gmLimit">GM 인원</label>
-          <input
-            id="gmLimit"
-            v-model.number="form.gmLimit"
-            type="number"
-            min="1"
-            max="10"
-          />
-        </div>
-
-        <div class="field">
-          <label for="playerLimit">플레이어 인원</label>
-          <input
-            id="playerLimit"
-            v-model.number="form.playerLimit"
-            type="number"
-            min="1"
-            max="20"
-          />
         </div>
       </div>
 
       <div class="row">
         <div class="field">
-          <label for="session">세션 일정</label>
-          <input id="session" v-model="form.sessionFixedDate" type="datetime-local" />
+          <label>진행 방식</label>
+          <div class="radio-group">
+            <template v-for="opt in sessionModeOptions" :key="opt.value">
+              <input type="radio" v-model="form.sessionMode" :id="opt.value" :value="opt.value" />
+              <template v-if="opt.value !== 'other'"><label :for="opt.value" class="radio-label">{{ opt.label }}</label></template>
+              <template v-else>
+                <input
+                  v-model="form.sessionModeOther"
+                  type="text"
+                  class="other-input"
+                  placeholder="직접 입력"
+                  @focus="form.sessionMode = 'other'"
+                />
+              </template>
+            </template>
+          </div>
         </div>
 
-        <div class="field">
-          <label for="deadline">모집 마감일</label>
-          <input id="deadline" v-model="form.recruitEndsAt" type="date" />
-        </div>
       </div>
 
       <div class="field">
@@ -316,6 +312,65 @@ function cancel() {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 0.85rem;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.radio-group input[type='radio'] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.radio-group .radio-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.7;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.radio-group .radio-label:hover {
+  opacity: 1;
+  border-color: var(--color-text);
+}
+
+.radio-group input[type='radio']:checked + .radio-label {
+  border-color: var(--color-border);
+  color: var(--color-text);
+  font-weight: 600;
+  opacity: 1;
+}
+
+.other-input {
+  flex: 3;
+  min-width: 60px;
+  font-size: 0.85rem;
+  border-color: var(--color-border);
+  outline: none;
+  background: transparent;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.other-input:hover {
+  opacity: 1;
 }
 
 .error {
