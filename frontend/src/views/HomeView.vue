@@ -131,14 +131,14 @@ onMounted(async () => {
   text-align: center;
   padding: 2rem 1rem 2.5rem;
 
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: 12px;
   margin-bottom: 1.5rem;
 }
 
 .hero h1 {
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
   margin-bottom: 0.4rem;
 }
@@ -166,7 +166,7 @@ onMounted(async () => {
 
 .sort select {
   padding: 0.35rem 0.5rem;
-  border: 1px solid var(--color-border);
+  border: none;
   border-radius: 6px;
   background: var(--color-background);
   color: var(--color-text);
@@ -177,7 +177,7 @@ onMounted(async () => {
   text-align: center;
   padding: 3rem 1rem;
   opacity: 0.7;
-  border: 1px dashed var(--color-border);
+  border: 2px dashed var(--color-border);
   border-radius: 10px;
 }
 
@@ -189,7 +189,7 @@ onMounted(async () => {
 }
 
 .table-wrap {
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: 8px;
   overflow: hidden;
   overflow-x: auto;
@@ -227,7 +227,7 @@ onMounted(async () => {
 }
 
 .post-table tbody tr:hover {
-  background: var(--color-red-soft);
+  background: var(--color-hover);
 }
 
 .col-rule {
@@ -264,7 +264,6 @@ onMounted(async () => {
   gap: 0.3rem;
   font-size: 0.8rem;
   padding: 0.2rem 0.5rem;
-  border-radius: 4px;
   white-space: nowrap;
 }
 

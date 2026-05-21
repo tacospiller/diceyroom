@@ -136,7 +136,7 @@ function getProfilePic() {
   align-items: center;
   gap: 1.5rem;
   padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
   background: var(--color-background);
   position: sticky;
   top: 0;
@@ -171,10 +171,10 @@ function getProfilePic() {
   max-width: 560px;
   width: 100%;
   margin: 0 auto;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
+  border: none;
+  border-radius: 255px;
   overflow: hidden;
-  background: var(--color-background);
+  background: var(--color-surface);
 }
 
 .search-input {
@@ -219,11 +219,11 @@ function getProfilePic() {
 .create-btn {
   display: inline-flex;
   align-items: center;
-  background: var(--color-red);
+  background: var(--color-button);
   color: var(--color-text);
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border: 2px solid var(--color-border);
+  border-radius: 100px;
+  padding: 0.4rem 1rem;
   font-weight: 600;
   cursor: pointer;
   font-size: 0.9rem;
@@ -232,7 +232,7 @@ function getProfilePic() {
 }
 
 .create-btn:hover {
-  background: var(--color-red-hover);
+  background: var(--color-surface);
 }
 
 .ghost-btn {
@@ -240,9 +240,9 @@ function getProfilePic() {
   align-items: center;
   background: transparent;
   color: var(--color-text);
-  border: 1px solid var(--color-border);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border: 2px solid var(--color-border);
+  border-radius: 100px;
+  padding: 0.4rem 1rem;
   font-weight: 600;
   font-size: 0.9rem;
   white-space: nowrap;
@@ -312,16 +312,16 @@ function getProfilePic() {
   top: calc(100% + 8px);
   min-width: 240px;
   background: var(--color-background);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 8px 8px rgba(0, 0, 0, 0.5);
   z-index: 200;
 }
 
 .dropdown-header {
   padding: 0.75rem 1rem;
   font-weight: 600;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 3px solid var(--color-border);
 }
 
 .dropdown ul {
@@ -358,8 +358,12 @@ function getProfilePic() {
 }
 
 .divider {
-  border-top: 1px solid var(--color-border);
+  border-top: 3px solid var(--color-border);
   margin-top: 0.25rem;
+}
+
+.logo-text {
+  font-weight: 900;
 }
 
 @media (max-width: 768px) {
