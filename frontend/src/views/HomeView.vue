@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { listPosts, type PostListEntry, type PostMode } from '@/api/posts'
+import sessionTextIcon from '@/assets/icons/session-text.svg?raw'
+import sessionVoiceIcon from '@/assets/icons/session-voice.svg?raw'
+import sessionOfflineIcon from '@/assets/icons/session-offline.svg?raw'
+
+const router = useRouter()
 
 const posts = ref<PostListEntry[]>([])
 const loading = ref(true)
@@ -16,23 +21,28 @@ const MODE_LABEL: Record<PostMode, string> = {
   other: '기타',
 }
 
+const MODE_ICON: Partial<Record<PostMode, string>> = {
+  text: sessionTextIcon,
+  voice: sessionVoiceIcon,
+  offline: sessionOfflineIcon,
+}
+
 function modeClass(m: PostMode | string | undefined): PostMode {
   if (m === 'text' || m === 'voice' || m === 'offline' || m === 'other') return m
   return 'other'
 }
 
-function fmtDate(s: string): string {
-  if (!s) return '-'
-  const d = new Date(s)
-  if (Number.isNaN(d.getTime())) return s
+function fmtDate(d: Date | undefined): string {
+  if (!d) return '-'
+  if (Number.isNaN(d.getTime())) return "-"
   return d.toISOString().slice(0, 10)
 }
 
 const sorted = computed(() => {
   if (sortBy.value === 'latest') {
     return [...posts.value].sort((a, b) => {
-      const da = new Date(a.recruitEndDate).getTime()
-      const db = new Date(b.recruitEndDate).getTime()
+      const da = a.createdAt.getTime()
+      const db = b.createdAt.getTime()
       return db - da
     })
   }
@@ -84,23 +94,24 @@ onMounted(async () => {
               <th class="col-rule">룰</th>
               <th class="col-mode">세션 방식</th>
               <th class="col-title">제목</th>
-              <th class="col-date">세션 일정</th>
               <th class="col-date">모집 마감</th>
+              <th class="col-date">작성자</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="post in sorted" :key="post.key">
+            <tr v-for="post in sorted" :key="post.key" class="clickable-row" @click="router.push(`/posts/${post.key}`)">
               <td>{{ post.rule }}</td>
               <td>
-                <span class="mode-pill" :class="modeClass(post.mode)">
-                  {{ MODE_LABEL[modeClass(post.mode)] }}
+                <span class="mode-pill" :class="modeClass(post.sessionMode)">
+                  <span v-if="MODE_ICON[modeClass(post.sessionMode)]" v-html="MODE_ICON[modeClass(post.sessionMode)]" class="pill-icon"></span>
+                  {{ MODE_LABEL[modeClass(post.sessionMode)] }}
                 </span>
               </td>
               <td class="title-cell">
                 <RouterLink :to="`/posts/${post.key}`">{{ post.title }}</RouterLink>
               </td>
-              <td class="date-cell">{{ fmtDate(post.sessionDate) }}</td>
-              <td class="date-cell">{{ fmtDate(post.recruitEndDate) }}</td>
+              <td class="date-cell">{{ fmtDate(post.recruitEndsAt as Date) }}</td>
+              <td class="date-cell">{{  }}</td>
             </tr>
           </tbody>
         </table>
@@ -211,6 +222,10 @@ onMounted(async () => {
   border-bottom: none;
 }
 
+.post-table tbody tr.clickable-row {
+  cursor: pointer;
+}
+
 .post-table tbody tr:hover {
   background: var(--color-red-soft);
 }
@@ -241,5 +256,27 @@ onMounted(async () => {
 .date-cell {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+.mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.pill-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.pill-icon :deep(svg) {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
 }
 </style>

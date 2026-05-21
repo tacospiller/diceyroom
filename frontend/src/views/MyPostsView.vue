@@ -47,7 +47,7 @@ function titleFrom(_: PostListEntry): string {
 
 onMounted(async () => {
   try {
-    const list = await listPosts({ userid: userStore.session.userid })
+    const list = await listPosts({ authorId: userStore.session.userid })
     myPosts.value = list.map((p) => ({ ...p, status: deriveStatus(p) }))
   } catch (err: unknown) {
     const status = (err as { response?: { status?: number } })?.response?.status

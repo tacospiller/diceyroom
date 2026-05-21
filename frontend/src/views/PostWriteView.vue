@@ -4,20 +4,24 @@ import { useRoute, useRouter } from 'vue-router'
 import { createPost, editPost, getPost, PostNotFoundError } from '@/api/posts'
 import { useMetaStore } from '@/stores/meta'
 import AutocompleteInput from '@/components/AutocompleteInput.vue'
+import sessionTextIcon from '@/assets/icons/session-text.svg?raw'
+import sessionVoiceIcon from '@/assets/icons/session-voice.svg?raw'
+import sessionOfflineIcon from '@/assets/icons/session-offline.svg?raw'
+
 
 const metaStore = useMetaStore()
 
 const PRESET_SESSION_MODES = new Set(['text', 'voice', 'offline', 'other'])
 
 const sessionModeOptions = [
-  { value: 'text', label: '텍스트' },
-  { value: 'voice', label: '보이스' },
-  { value: 'offline', label: '오프라인' },
+  { value: 'text', label: '텍스트', icon: sessionTextIcon },
+  { value: 'voice', label: '보이스', icon: sessionVoiceIcon },
+  { value: 'offline', label: '오프라인', icon: sessionOfflineIcon },
   { value: 'other', label: '기타' },
 ]
 
 const sessionDateTypeOptions = [
-  { value: 'fixed', label: '특정 날짜' },
+  { value: 'fixed', label: '확정 날짜' },
   { value: 'range', label: '협의' },
   { value: 'autodate', label: '다이시룸 일정조정 툴 사용' },
 ]
@@ -129,14 +133,11 @@ const titleError = computed(() =>
   form.value.title.trim().length === 0 ? '제목을 입력해 주세요.' : '',
 )
 const ruleError = computed(() =>
-  form.value.rule.trim().length === 0 ? '룰 시스템을 입력해 주세요.' : '',
-)
-const descError = computed(() =>
-  form.value.description.trim().length < 10 ? '소개는 10자 이상 작성해 주세요.' : '',
+  form.value.rule.trim().length === 0 ? '사용 룰을 입력해 주세요.' : '',
 )
 
 const canSubmit = computed(
-  () => !titleError.value && !ruleError.value && !descError.value && !submitting.value,
+  () => !titleError.value && !ruleError.value && !submitting.value,
 )
 
 async function submit() {
@@ -214,7 +215,7 @@ function cancel() {
             id="title"
             v-model="form.title"
             type="text"
-            placeholder="ex) [CoC 7e] 입문자 환영, 원샷 모집합니다"
+            placeholder="구인글 제목을 입력해 주세요"
             maxlength="80"
           />
           <small v-if="titleError" class="error">{{ titleError }}</small>
@@ -230,7 +231,7 @@ function cancel() {
           <AutocompleteInput
             v-model="form.rule"
             :options="metaStore.rules"
-            placeholder="ex) 크툴루의 부름"
+            placeholder="자동완성이 되지 않으면 직접 입력해 주세요"
           />
           <small v-if="ruleError" class="error">{{ ruleError }}</small>
         </div>
@@ -241,12 +242,13 @@ function cancel() {
             <template v-for="opt in sessionModeOptions" :key="opt.value">
               <input type="radio" v-model="form.sessionMode" :id="'mode-' + opt.value" :value="opt.value" />
               <template v-if="opt.value !== 'other'">
-                <label :for="'mode-' + opt.value" class="radio-label">{{ opt.label }}</label>
+                <label :for="'mode-' + opt.value" class="radio-label">
+                  <span v-if="opt.icon" v-html="opt.icon" class="mode-icon"></span>{{ opt.label }}
+                </label>
               </template>
               <template v-else>
                 <label :for="'mode-' + opt.value" class="radio-label">
-                  {{ opt.label }}
-                  
+                  <span v-if="opt.icon" v-html="opt.icon" class="mode-icon"></span>{{ opt.label }}
                 </label>
                 <input
                     v-model="form.sessionModeOther"
@@ -267,7 +269,7 @@ function cancel() {
             id="location"
             v-model="form.sessionLocation"
             type="text"
-            placeholder="ex) Discord, Foundry VTT, 홍대 보드게임 카페"
+            placeholder="ex) Roll20, 디스코드, 홍대 인근 스터디룸"
           />
         </div>
       </section>
@@ -297,7 +299,7 @@ function cancel() {
             id="range-details"
             v-model="form.sessionRangeDetails"
             type="text"
-            placeholder="ex) 3월 중 주말, 평일 저녁 가능"
+            placeholder="ex) 3월 중 출발"
           />
         </div>
 
@@ -343,12 +345,12 @@ function cancel() {
         </div>
 
         <div class="field">
-          <span class="field-label">다이시룸에서 참가 신청 받기</span>
+          <span class="field-label">참가 신청 형식</span>
           <div class="radio-group">
             <input type="radio" id="req-yes" v-model="form.acceptJoinRequests" :value="true" />
-            <label for="req-yes" class="radio-label">받을래요</label>
+            <label for="req-yes" class="radio-label">구인글을 통해 참여 신청 받기</label>
             <input type="radio" id="req-no" v-model="form.acceptJoinRequests" :value="false" />
-            <label for="req-no" class="radio-label">안 받을래요</label>
+            <label for="req-no" class="radio-label">참여자에게 직접 초대 링크 보내기</label>
           </div>
         </div>
       </section>
@@ -363,7 +365,6 @@ function cancel() {
             rows="10"
             placeholder="시나리오, 진행 방식, 준비물, 모집 대상 등을 자유롭게 적어주세요."
           ></textarea>
-          <small v-if="descError" class="error">{{ descError }}</small>
         </div>
       </section>
 
@@ -528,8 +529,21 @@ select {
   opacity: 1;
 }
 
+.mode-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.mode-icon :deep(svg) {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
 .other-input {
-  flex: 3;
+  flex: 2.5;
   min-width: 60px;
   font-size: 0.85rem;
   border: none;
