@@ -64,8 +64,8 @@ onMounted(async () => {
 <template>
   <div class="home">
     <section class="hero">
-      <h1>함께 할 동료를 찾아보세요</h1>
-      <p>TRPG 마스터와 플레이어들이 만나는 공간, DiceyRoom</p>
+      <h1>TRPG를 하자</h1>
+      <p>TRPG 구인글을 간편하게 쓰고 검색하세요!</p>
     </section>
 
     <section class="board">

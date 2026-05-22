@@ -56,8 +56,7 @@ function getProfilePic() {
 <template>
   <header class="site-header">
     <RouterLink to="/" class="logo">
-      <span class="logo-icon" v-html="logoIcon"></span>
-      <span class="logo-text">DiceyRoom</span>
+      <span class="logo-text">💃🎲🕺DiceyRoom</span>
     </RouterLink>
 
     <div class="search-wrapper">
@@ -65,7 +64,7 @@ function getProfilePic() {
         v-model="searchQuery"
         type="text"
         class="search-input"
-        placeholder="시스템, 지역, 제목으로 검색..."
+        placeholder="룰, 제목, 내용으로 검색..."
       />
       <button class="search-btn" aria-label="검색">
         <span class="icon" v-html="searchIcon"></span>
@@ -194,7 +193,7 @@ function getProfilePic() {
   cursor: pointer;
   display: flex;
   align-items: center;
-  color: var(--color-red);
+  color: var(--color-text);
 }
 
 .icon {

@@ -62,8 +62,8 @@
 }
 
 :root {
-  --color-background: #f7f7f7;
-  --color-surface: #eceae8;
+  --color-background: #f8f8f8;
+  --color-surface: #e9e4e2;
   --color-text: #000000;
   --color-text-muted: rgba(0,0,0, 0.6);
   --color-border: rgba(0,0,0, 0.8);

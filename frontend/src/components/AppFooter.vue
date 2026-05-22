@@ -9,7 +9,7 @@
       <nav class="footer-nav">
         <a href="#">이용약관</a>
         <a href="#">개인정보처리방침</a>
-        <a href="#">License</a>
+        <a href="#">라이선스</a>
       </nav>
     </div>
   </footer>
@@ -17,7 +17,7 @@
 
 <style scoped>
 .site-footer {
-  border-top: 1px solid var(--color-border);
+  border-top: 2px solid var(--color-border);
   padding: 1.25rem 1.5rem;
   font-size: 0.85rem;
   opacity: 0.85;
