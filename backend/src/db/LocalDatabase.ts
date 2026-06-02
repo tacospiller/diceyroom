@@ -10,7 +10,7 @@ export class LocalDatabase implements Database {
     return path.join(this.dataDir, table, `${key}.json`);
   }
 
-  async query<T extends DBDocument>(table: string, filter: Partial<T>, projection?: (keyof T)[]): Promise<Partial<T>[]> {
+  async query<T extends DBDocument>(table: string): Promise<T[]> {
     const dir = path.join(this.dataDir, table);
     let files: string[];
     try {
@@ -24,16 +24,8 @@ export class LocalDatabase implements Database {
         .filter(f => f.endsWith('.json'))
         .map(f => fs.readFile(path.join(dir, f), 'utf-8').then(raw => JSON.parse(raw) as T)),
     );
-    const filterEntries = Object.entries(filter) as [string, unknown][];
-    const filtered = entries.filter(item =>
-      filterEntries.every(([k, v]) => (item as Record<string, unknown>)[k] === v),
-    );
-    if (!projection || projection.length === 0) return filtered;
-    return filtered.map(item => {
-      const projected = {} as Record<string, unknown>;
-      for (const k of projection) projected[k as string] = (item as Record<string, unknown>)[k as string];
-      return projected as Partial<T>;
-    });
+
+    return entries;
   }
 
   async get<T extends DBDocument>(table: string, key: string): Promise<T | null> {

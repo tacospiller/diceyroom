@@ -16,28 +16,11 @@ export class DynamoDBDatabase implements Database {
     this.client = DynamoDBDocumentClient.from(base);
   }
 
-  async query<T extends DBDocument>(table: string, filter: Partial<T>, projection?: (keyof T)[]): Promise<Partial<T>[]> {
-    const filterEntries = Object.entries(filter).filter(([, v]) => v !== undefined) as [string, unknown][];
-    const hasFilter = filterEntries.length > 0;
-    const hasProjection = projection && projection.length > 0;
-
-    const expressionAttributeNames: Record<string, string> = {
-      ...(hasFilter && Object.fromEntries(filterEntries.map(([k], i) => [`#f${i}`, k]))),
-      ...(hasProjection && Object.fromEntries(projection!.map((k, i) => [`#p${i}`, k as string]))),
-    };
-
+  async query<T extends DBDocument>(table: string): Promise<T[]> {
     const { Items } = await this.client.send(new ScanCommand({
       TableName: table,
-      ...(hasFilter && {
-        FilterExpression: filterEntries.map((_, i) => `#f${i} = :v${i}`).join(' AND '),
-        ExpressionAttributeValues: Object.fromEntries(filterEntries.map(([, v], i) => [`:v${i}`, v])),
-      }),
-      ...(hasProjection && {
-        ProjectionExpression: projection!.map((_, i) => `#p${i}`).join(', '),
-      }),
-      ...(Object.keys(expressionAttributeNames).length > 0 && { ExpressionAttributeNames: expressionAttributeNames }),
     }));
-    return (Items ?? []) as Partial<T>[];
+    return (Items ?? []) as T[];
   }
 
   async get<T extends DBDocument>(table: string, key: string): Promise<T | null> {

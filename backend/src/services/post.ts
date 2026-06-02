@@ -1,78 +1,13 @@
 import config from "../config";
 import db from "../db";
-import { DBDocument } from "../db/Database";
 import { customAlphabet } from "nanoid";
 import { alphanumeric } from 'nanoid-dictionary';
-
+import { getPostStatus, PostDocument } from "./documents/PostDocument";
+import { PostBodyResponse, PostCreationRequest, PostFilterRequest, PostListEntryResponse, PostListResponse } from "./DTO/postDTOs";
+import { PostId, UserId } from "./ids";
 
 const TABLE = config.tables.posts;
 const genUid = customAlphabet(alphanumeric, 6);
-
-type UserId = string;
-
-interface PostDocument extends DBDocument {
-    authorId: UserId;
-    rule: string;
-    title: string;
-    description?: string;
-    createdAt: Date;
-    recruitEndsAt?: Date | string;
-    
-    sessionMode: string;
-    sessionLocation?: string;
-    sessionDateType: string; // fixed, range, autodate
-    sessionFixedDate?: Date; // present if fixed
-    sessionRangeDetails?: string; // present if range
-
-
-    gmLimit: number;
-    playerLimit: number;
-    gm?: UserId[];
-    players?: UserId[];
-    publishParticipants: boolean;
-    acceptJoinRequests: boolean;
-}
-
-interface PostListEntry {
-    key: string;
-    authorId: UserId;
-    rule: string;
-    title: string;
-    createdAt: Date;
-    recruitEndsAt?: Date | string;
-    
-    sessionMode: string;
-
-    gmLimit: number;
-    playerLimit: number;
-    gmCount: number;
-    playerCount: number;
-}
-
-export interface PostCreationRequest {
-    rule: string;
-    title: string;
-    description?: string;
-    recruitEndsAt?: Date | string;
-    
-    sessionMode: string;
-    sessionLocation?: string;
-    sessionDateType: string; // fixed, range, autodate
-    sessionFixedDate?: Date; // present if fixed
-    sessionRangeDetails?: string; // present if range
-
-    gmLimit: number;
-    playerLimit: number;
-    publishParticipants: boolean;
-    acceptJoinRequests: boolean;
-    authorParticipateType: string; // gm, player, none
-}
-
-export interface PostFilter {
-    authorId?: UserId;
-    rule?: string;
-    sessionMode?: string;
-}
 
 export class PostNotFoundError extends Error {
   constructor(key: string) {
@@ -88,21 +23,19 @@ export class NotAuthorizedError extends Error {
   }
 }
 
-export async function createPost(author: UserId, req: PostCreationRequest) {
-    var { authorParticipateType, ...spreadReq } = req;
+export async function createPost(author: UserId, req: PostCreationRequest): Promise<PostId> {
+    var postId = genUid();
     var doc: PostDocument = {
-        key: genUid(),
+        key: postId,
         authorId: author,
         createdAt: new Date(),
-        gm: authorParticipateType === "gm" ? [author] : [],
-        players: authorParticipateType === "player" ? [author] : [],
-        ...spreadReq
+        ...req
     };
-
     await db.create(TABLE, doc);
+    return postId;
 }
 
-export async function editPost(author: UserId, postKey: string, req: PostCreationRequest) {
+export async function editPost(author: UserId, postKey: PostId, req: PostCreationRequest): Promise<PostId> {
     var checkDoc = await db.get<PostDocument>(TABLE, postKey);
     if (checkDoc === null) {
         throw new PostNotFoundError(postKey);
@@ -110,18 +43,15 @@ export async function editPost(author: UserId, postKey: string, req: PostCreatio
     if (checkDoc.authorId !== author) {
         throw new NotAuthorizedError(postKey);
     }
-
-    var { authorParticipateType, ...spreadReq } = req;
-
     var doc = {
         ...checkDoc,
-        ...spreadReq
+        ...req
     };
-
     await db.save(TABLE, doc);
+    return postKey;
 }
 
-export async function getPost(userId: UserId, key: string): Promise<PostDocument> {
+export async function getPost(userId: UserId, key: PostId): Promise<PostBodyResponse> {
     var doc = await db.get<PostDocument>(TABLE, key);
     if (doc === null) {
         throw new PostNotFoundError(key);
@@ -129,23 +59,36 @@ export async function getPost(userId: UserId, key: string): Promise<PostDocument
 
     var hideInformation = doc.authorId !== userId;
     if (hideInformation && !doc.publishParticipants) {
-        doc.gm = doc.gm?.map(x => "--unknown--");
-        doc.players = doc.players?.map(x => "--unknown--");
+        doc.participants = doc.participants.map(x => {
+            if (x.userId !== doc?.authorId) {
+                x.userId = "--unknown--";
+            }
+            return x;
+        });
     }
 
     return doc;
 }
 
-export async function listPost(filter: PostFilter): Promise<PostListEntry[]> {
-    var docs = await db.query<PostDocument>(TABLE, filter, ["key", "authorId", "title", "rule", "sessionMode", "recruitEndsAt", "playerLimit", "players", "gmLimit", "gm"]);
-    var entries = docs.map(x => {
-        var { gm, players, ...spread } = x;
+export async function listPost(filter: PostFilterRequest): Promise<PostListResponse> {
+    var docs = await db.query<PostDocument>(TABLE);
+    const entries: PostListEntryResponse[] = docs.map(x => {
         return {
-            gmCount: gm?.length ?? 0,
-            playerCount: players?.length ?? 0,
-            ...spread
+            postId: x.key,
+            rule: x.rule,
+            title: x.title,
+            sessionMode: x.sessionMode,
+            
+            gmCount: x.gmCount,
+            playerCount: x.playerCount,
+            participantCount: x.participantCount,
+            participants: x.participants?.map(x => x.participantType),
+            
+            status: getPostStatus(x),
         };
     });
 
-    return entries as PostListEntry[];
+    return {
+        entries
+    };
 }

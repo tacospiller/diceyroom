@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
-import { createPost, editPost, getPost, listPost, PostCreationRequest, PostFilter } from '../services/post';
+import { createPost, editPost, getPost, listPost } from '../services/post';
+import { PostCreationRequest, PostFilterRequest } from '../services/DTO/postDTOs';
 
 const router = Router();
 
 router.get('/list', async (req, res) => {
-  const filter = (req.query ?? {}) as PostFilter;
+  const filter = (req.query ?? {}) as PostFilterRequest;
   const list = await listPost(filter);
   // TODO: pagination
   res.status(200).json(list);

@@ -1,7 +1,12 @@
 type DbType = 'local' | 'dynamodb';
+type CacheType = 'memory' | 'redis';
 
 interface Config {
   db: DbType;
+  cache: CacheType;
+  redis: {
+    url: string;
+  };
   dynamodb: {
     region: string;
     endpoint?: string;
@@ -21,6 +26,10 @@ interface Config {
 
 const config: Config = {
   db: (process.env.DB_TYPE as DbType) ?? 'local',
+  cache: (process.env.CACHE_TYPE as CacheType) ?? 'memory',
+  redis: {
+    url: process.env.REDIS_URL ?? 'redis://localhost:6379',
+  },
   dynamodb: {
     region: process.env.AWS_REGION ?? 'us-east-1',
     endpoint: process.env.DYNAMODB_ENDPOINT,
