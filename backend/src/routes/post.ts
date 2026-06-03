@@ -6,9 +6,8 @@ import { PostCreationRequest, PostFilterRequest } from '../services/DTO/postDTOs
 const router = Router();
 
 router.get('/list', async (req, res) => {
-  const filter = (req.query ?? {}) as PostFilterRequest;
+  const filter = (req.query ?? {}) as unknown as PostFilterRequest;
   const list = await listPost(filter);
-  // TODO: pagination
   res.status(200).json(list);
 });
 
