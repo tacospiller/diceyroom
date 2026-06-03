@@ -26,6 +26,8 @@ export interface PostFilterRequest {
     rule?: string;
     sessionMode?: string;
     status?: PostStatus;
+    pageSize: number;
+    page: number;
 }
 
 export interface PostListEntryResponse {

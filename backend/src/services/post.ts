@@ -5,6 +5,7 @@ import { alphanumeric } from 'nanoid-dictionary';
 import { getPostStatus, PostDocument } from "./documents/PostDocument";
 import { PostBodyResponse, PostCreationRequest, PostFilterRequest, PostListEntryResponse, PostListResponse } from "./DTO/postDTOs";
 import { PostId, UserId } from "./ids";
+import { addPostToCache, filterFromCache, loadFromCache, updatePostInCache } from "./postCache";
 
 const TABLE = config.tables.posts;
 const genUid = customAlphabet(alphanumeric, 6);
@@ -32,6 +33,7 @@ export async function createPost(author: UserId, req: PostCreationRequest): Prom
         ...req
     };
     await db.create(TABLE, doc);
+    await addPostToCache(doc);
     return postId;
 }
 
@@ -48,6 +50,7 @@ export async function editPost(author: UserId, postKey: PostId, req: PostCreatio
         ...req
     };
     await db.save(TABLE, doc);
+    await updatePostInCache(checkDoc, doc);
     return postKey;
 }
 
@@ -71,22 +74,8 @@ export async function getPost(userId: UserId, key: PostId): Promise<PostBodyResp
 }
 
 export async function listPost(filter: PostFilterRequest): Promise<PostListResponse> {
-    var docs = await db.query<PostDocument>(TABLE);
-    const entries: PostListEntryResponse[] = docs.map(x => {
-        return {
-            postId: x.key,
-            rule: x.rule,
-            title: x.title,
-            sessionMode: x.sessionMode,
-            
-            gmCount: x.gmCount,
-            playerCount: x.playerCount,
-            participantCount: x.participantCount,
-            participants: x.participants?.map(x => x.participantType),
-            
-            status: getPostStatus(x),
-        };
-    });
+    var ids = await filterFromCache(filter);
+    var entries = (await Promise.all(ids.map(x => loadFromCache(x)))).filter(x => !!x);
 
     return {
         entries

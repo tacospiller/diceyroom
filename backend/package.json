@@ -11,6 +11,7 @@
     "@aws-sdk/client-dynamodb": "^3.1047.0",
     "@aws-sdk/lib-dynamodb": "^3.1047.0",
     "cors": "^2.8.5",
+    "es-toolkit": "^1.47.0",
     "express": "^4.19.2",
     "express-session": "^1.19.0",
     "ioredis": "^5.11.0",
