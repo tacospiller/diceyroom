@@ -1,5 +1,6 @@
 import { createApp } from "./app";
 import { env } from "./config/env";
+import { disconnect } from "./container";
 
 const app = createApp();
 
@@ -11,8 +12,10 @@ const server = app.listen(env.PORT, () => {
 const shutdown = (signal: string) => {
   console.log(`\n${signal} received, shutting down...`);
   server.close(() => {
-    console.log("Server closed.");
-    process.exit(0);
+    void disconnect().finally(() => {
+      console.log("Server closed.");
+      process.exit(0);
+    });
   });
 };
 
