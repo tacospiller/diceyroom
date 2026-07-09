@@ -1,30 +1,20 @@
-import express from 'express';
-import cors from 'cors';
-import session from 'express-session';
-import accountRouter from './routes/account';
-import postRouter from './routes/post';
-import metaRouter from './routes/meta';
+import { createApp } from "./app";
+import { env } from "./config/env";
 
-const app = express();
-const PORT = process.env.PORT ?? 3000;
+const app = createApp();
 
-app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173', credentials: true }));
-app.use(express.json());
-app.use(session({
-  secret: process.env.SESSION_SECRET ?? 'dev-secret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { httpOnly: true, sameSite: 'lax' },
-}));
-
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok' });
+const server = app.listen(env.PORT, () => {
+  console.log(`Server listening on http://localhost:${env.PORT} [${env.NODE_ENV}]`);
 });
 
-app.use('/api/account', accountRouter);
-app.use('/api/post', postRouter);
-app.use('/api/meta', metaRouter);
+// Graceful shutdown
+const shutdown = (signal: string) => {
+  console.log(`\n${signal} received, shutting down...`);
+  server.close(() => {
+    console.log("Server closed.");
+    process.exit(0);
+  });
+};
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
