@@ -7,6 +7,9 @@ import { RedisSessionStore } from "./stores/redisSessionStore";
 import { FileSessionStore } from "./stores/fileSessionStore";
 import { TokenService } from "./services/tokenService";
 import { AuthService } from "./services/authService";
+import { ImageStorage } from "./storage/imageStorage";
+import { LocalImageStorage } from "./storage/localImageStorage";
+import { S3ImageStorage } from "./storage/s3ImageStorage";
 
 /**
  * Composition root. Chooses concrete implementations based on env.PERSISTENCE
@@ -29,6 +32,10 @@ export const userRepository: UserRepository = useFiles
 export const sessionStore: SessionStore = useFiles
   ? new FileSessionStore(env.DATA_DIR)
   : new RedisSessionStore();
+
+export const imageStorage: ImageStorage = useFiles
+  ? new LocalImageStorage(env.UPLOAD_DIR, env.PUBLIC_URL)
+  : new S3ImageStorage(env.S3_BUCKET, env.AWS_REGION, env.S3_PUBLIC_URL);
 
 export const tokenService = new TokenService(sessionStore);
 export const authService = new AuthService(userRepository);

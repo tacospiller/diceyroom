@@ -1,11 +1,12 @@
 export interface User {
   /** Internal unique id (uuid). Partition key in DynamoDB. */
   id: string;
-  /** Google account id (the OAuth `sub`). Unique per Google account. */
+  /** Google account id (the OpenID `sub`) — the only data taken from Google. */
   googleId: string;
-  email: string;
-  name: string;
-  avatarUrl?: string;
+  /** User-chosen, unique display name. */
+  username: string;
+  /** URL of a user-uploaded profile image (optional). */
+  profileImageUrl?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -13,15 +14,14 @@ export interface User {
 /** Shape safe to expose to clients. */
 export type PublicUser = Pick<
   User,
-  "id" | "email" | "name" | "avatarUrl" | "createdAt"
+  "id" | "username" | "profileImageUrl" | "createdAt"
 >;
 
 export function toPublicUser(user: User): PublicUser {
   return {
     id: user.id,
-    email: user.email,
-    name: user.name,
-    avatarUrl: user.avatarUrl,
+    username: user.username,
+    profileImageUrl: user.profileImageUrl,
     createdAt: user.createdAt,
   };
 }

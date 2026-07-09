@@ -43,6 +43,9 @@ export const env = {
   // Where the browser gets redirected back to after a successful login.
   CLIENT_URL: optional("CLIENT_URL", "http://localhost:5173"),
 
+  // This server's own public base URL (used to build uploaded-image URLs).
+  PUBLIC_URL: optional("PUBLIC_URL", "http://localhost:3000"),
+
   // Google OAuth
   GOOGLE_CLIENT_ID: required("GOOGLE_CLIENT_ID"),
   GOOGLE_CLIENT_SECRET: required("GOOGLE_CLIENT_SECRET"),
@@ -67,4 +70,12 @@ export const env = {
 
   // Redis
   REDIS_URL: optional("REDIS_URL", "redis://localhost:6379"),
+
+  // Profile-image uploads
+  MAX_UPLOAD_MB: parseInt10(optional("MAX_UPLOAD_MB", "5"), 5),
+  // Local image storage (PERSISTENCE=file): directory served at /uploads.
+  UPLOAD_DIR: optional("UPLOAD_DIR", "./.data/uploads"),
+  // S3 image storage (PERSISTENCE=aws): bucket + optional custom public base.
+  S3_BUCKET: optional("S3_BUCKET", ""),
+  S3_PUBLIC_URL: optional("S3_PUBLIC_URL", ""),
 } as const;

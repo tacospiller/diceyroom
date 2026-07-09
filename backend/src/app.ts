@@ -29,6 +29,11 @@ export function createApp(): Application {
   configurePassport();
   app.use(passport.initialize());
 
+  // Serve locally-stored profile images (PERSISTENCE=file); S3 serves its own.
+  if (env.PERSISTENCE === "file") {
+    app.use("/uploads", express.static(env.UPLOAD_DIR));
+  }
+
   // Routes
   app.use("/health", healthRouter);
   app.use("/auth", authRouter);

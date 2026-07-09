@@ -18,3 +18,4 @@ export const ddb = DynamoDBDocumentClient.from(baseClient, {
 
 export const USERS_TABLE = env.DYNAMODB_TABLE;
 export const GOOGLE_ID_INDEX = "GoogleIdIndex";
+export const USERNAME_INDEX = "UsernameIndex";

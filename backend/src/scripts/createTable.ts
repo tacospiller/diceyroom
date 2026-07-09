@@ -11,7 +11,7 @@ import {
   ResourceNotFoundException,
 } from "@aws-sdk/client-dynamodb";
 import { env } from "../config/env";
-import { GOOGLE_ID_INDEX } from "../db/dynamo";
+import { GOOGLE_ID_INDEX, USERNAME_INDEX } from "../db/dynamo";
 
 const client = new DynamoDBClient({
   region: env.AWS_REGION,
@@ -43,6 +43,7 @@ async function main(): Promise<void> {
       AttributeDefinitions: [
         { AttributeName: "id", AttributeType: "S" },
         { AttributeName: "googleId", AttributeType: "S" },
+        { AttributeName: "username", AttributeType: "S" },
       ],
       KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
       GlobalSecondaryIndexes: [
@@ -51,11 +52,18 @@ async function main(): Promise<void> {
           KeySchema: [{ AttributeName: "googleId", KeyType: "HASH" }],
           Projection: { ProjectionType: "ALL" },
         },
+        {
+          IndexName: USERNAME_INDEX,
+          KeySchema: [{ AttributeName: "username", KeyType: "HASH" }],
+          Projection: { ProjectionType: "ALL" },
+        },
       ],
     })
   );
 
-  console.log(`Created table "${TableName}" with GSI "${GOOGLE_ID_INDEX}".`);
+  console.log(
+    `Created table "${TableName}" with GSIs "${GOOGLE_ID_INDEX}", "${USERNAME_INDEX}".`
+  );
 }
 
 main()

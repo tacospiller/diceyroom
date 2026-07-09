@@ -54,15 +54,22 @@ export class FileUserRepository implements UserRepository {
     return null;
   }
 
+  async findByUsername(username: string): Promise<User | null> {
+    await this.ensureLoaded();
+    for (const user of this.byId.values()) {
+      if (user.username === username) return user;
+    }
+    return null;
+  }
+
   async create(input: CreateUserInput): Promise<User> {
     await this.ensureLoaded();
     const now = new Date().toISOString();
     const user: User = {
       id: randomUUID(),
       googleId: input.googleId,
-      email: input.email,
-      name: input.name,
-      avatarUrl: input.avatarUrl,
+      username: input.username,
+      profileImageUrl: input.profileImageUrl,
       createdAt: now,
       updatedAt: now,
     };
@@ -79,9 +86,10 @@ export class FileUserRepository implements UserRepository {
     }
     const updated: User = {
       ...existing,
-      email: fields.email,
-      name: fields.name,
-      avatarUrl: fields.avatarUrl,
+      ...(fields.username !== undefined ? { username: fields.username } : {}),
+      ...(fields.profileImageUrl !== undefined
+        ? { profileImageUrl: fields.profileImageUrl }
+        : {}),
       updatedAt: new Date().toISOString(),
     };
     this.byId.set(id, updated);
